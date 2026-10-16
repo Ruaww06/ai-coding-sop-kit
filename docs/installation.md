@@ -6,11 +6,13 @@
 
 ### 获取工具包
 
-克隆固定版本到新目录，不要覆盖已有副本：
+克隆最新 beta 分支到新目录，不要覆盖已有副本：
 
 ```sh
-git clone --branch v2.0.0-beta.1 --single-branch https://github.com/Ruaww06/ai-coding-sop-kit.git ai-coding-sop-kit-beta
+git clone --branch docs/sop-v2 --single-branch https://github.com/Ruaww06/ai-coding-sop-kit.git ai-coding-sop-kit-beta
 ```
+
+需要固定历史版本时，可将分支名替换为 `v2.0.0-beta.1`；该标签保持不变，不含后续的旧入口与市场清单移除。
 
 ### 在项目中启动
 
@@ -37,7 +39,7 @@ claude --plugin-dir "/absolute/path/to/ai-coding-sop-kit-beta"
 
 ## marketplace 状态
 
-此 beta 推荐使用标签源码加 `--plugin-dir`。marketplace 安装、更新及卸载尚未验证，默认分支也不保证提供 beta 插件；请勿将默认分支的市场命令当作本 beta 的安装方式。
+当前不分发 marketplace 清单，仅提供源码加 `--plugin-dir` 的加载方式；请勿使用 marketplace 安装命令。既有标签的内容保持不变，精简目录结构的版本从下述 beta 分支获取。
 
 ## 其他 Agent Skills 客户端
 
@@ -46,7 +48,7 @@ claude --plugin-dir "/absolute/path/to/ai-coding-sop-kit-beta"
 1. 核对所用客户端的技能目录、发现和信任机制。
 2. 将完整 `skills/` 的所有子目录作为一组复制到技能目录，保留相邻关系；共享资源在 `sop/references/` 和 `sop/assets/`。不要只复制一个 `SKILL.md`。
 3. 已有同名目录时先比较，不整目录覆盖。保留 MIT 许可证；可将原 `LICENSE` 放在安装副本的 `sop/LICENSE`。
-4. 不复制仓库的 `.git`、维护者 `AGENTS.md` 或旧 `.agents/` 入口，不覆盖业务项目许可证或规约。
+4. 不复制仓库的 `.git`、维护者 `AGENTS.md` ，不覆盖业务项目许可证或规约。
 5. 没有 hook 时显式调用入口，或按客户端能力读取 `sop/SKILL.md`。资源路径以技能目录为基准，不要求目标项目存在 `docs/sop/`。
 
 更新前保留定制并比较差异；不要把项目任务记录写入技能副本。
@@ -58,7 +60,7 @@ claude --plugin-dir "/absolute/path/to/ai-coding-sop-kit-beta"
 | 接入方式 | 状态 |
 | --- | --- |
 | Claude Code 本地插件 | 已验证本地发现、startup、原生 resume 和有限任务场景 |
-| Claude Code marketplace | 安装、更新、卸载未验证 |
+| Claude Code marketplace | 当前不提供 |
 | Kimi / DeepSeek Harness | 手动接入说明，未实测原生安装 |
 | 其他文件型 Agent | 可按能力显式读入口，不承诺原生发现 |
 

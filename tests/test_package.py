@@ -34,12 +34,9 @@ def snapshot(directory):
 class PackageTests(unittest.TestCase):
     def test_manifests_and_version(self):
         plugin = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
-        market = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
         self.assertEqual(plugin["name"], "ai-coding-sop-kit")
         self.assertRegex(plugin["version"], r"^\d+\.\d+\.\d+(?:-[a-z0-9.]+)?$")
-        self.assertEqual(market["plugins"][0]["name"], plugin["name"])
-        self.assertEqual(market["plugins"][0]["source"], "./")
-        self.assertNotIn("version", market["plugins"][0])
+        self.assertEqual({p.name for p in (ROOT / ".claude-plugin").iterdir()}, {"plugin.json"})
         for name in ["README.md", "CHANGELOG.md", "docs/sop/migration-v2.md"]:
             self.assertIn(plugin["version"], (ROOT / name).read_text())
 
@@ -84,9 +81,7 @@ class PackageTests(unittest.TestCase):
             text = (ROOT / f"docs/sop/{name}.md").read_text()
             self.assertIn("索引", text)
             self.assertNotIn("```markdown", text)
-        legacy = (ROOT / ".agents/skills/sop/SKILL.md").read_text()
-        self.assertIn("../../../skills/sop/SKILL.md", legacy)
-        self.assertIn("disable-model-invocation: true", legacy)
+        self.assertFalse((ROOT / ".agents/skills/sop/SKILL.md").exists())
 
     def test_hook_configuration(self):
         config = json.loads((ROOT / "hooks/hooks.json").read_text())

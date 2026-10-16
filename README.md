@@ -10,11 +10,13 @@
 
 ### 1. 获取 beta
 
-在尚不存在的新目录克隆固定版本：
+在尚不存在的新目录获取最新 beta 分支（包含精简后的目录结构）：
 
 ```sh
-git clone --branch v2.0.0-beta.1 --single-branch https://github.com/Ruaww06/ai-coding-sop-kit.git ai-coding-sop-kit-beta
+git clone --branch docs/sop-v2 --single-branch https://github.com/Ruaww06/ai-coding-sop-kit.git ai-coding-sop-kit-beta
 ```
+
+分支会随修复更新；需要固定历史版本时可使用 `v2.0.0-beta.1` 标签，该标签不包含后续目录精简。当前仅提供本地插件加载，不提供 marketplace 安装。
 
 ### 2. 在你的项目中加载
 
@@ -79,7 +81,7 @@ Claude Code 中的完整命令为 `/ai-coding-sop-kit:<技能名>`。
 以下仍未完成验证：
 
 - 原生 clear／compact 后的恢复。
-- marketplace 安装、更新和卸载。
+- marketplace 分发（当前不提供）。
 - 其他客户端的原生接入。
 - 真实设备、长期挂起及复杂并发任务。
 

@@ -14,7 +14,7 @@ python3 -m unittest discover -s tests -v
 
 测试覆盖：
 
-- 插件及 marketplace 元数据、版本一致性、七个技能的格式。
+- 插件元数据、版本一致性、七个技能的格式，以及已移除的旧入口和市场清单不再分发。
 - 本地链接、代码围栏、整组技能搬移后的资源引用。
 - 启动脚本在中文、空格路径下的重复执行、缺失资源和只读行为。
 - 执行阶段停机规则引用、H 待裁决与批准分离、既有知识库入口约定。
@@ -23,11 +23,10 @@ python3 -m unittest discover -s tests -v
 
 现有套件包含 14 项测试。本地测试及 Linux/macOS CI 已通过；后续版本请以对应提交的 [GitHub Actions](https://github.com/Ruaww06/ai-coding-sop-kit/actions) 结果为准。
 
-安装了 Claude Code 时，可分别校验清单：
+安装了 Claude Code 时，可校验插件清单：
 
 ```sh
 claude plugin validate .claude-plugin/plugin.json --strict
-claude plugin validate .claude-plugin/marketplace.json --strict
 ```
 
 清单验证不等于技能已加载，也不等于行为正确。部分客户端版本的目录验证会返回空的内容列表，因此不将该结果作为技能发现的证据。

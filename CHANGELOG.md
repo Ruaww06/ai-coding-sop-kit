@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- 移除旧 `.agents/skills/sop` 兼容入口和暂不提供的 marketplace 清单。
+- 保留插件元数据和 GitHub CI；安装说明改为最新 beta 分支获取，既有版本标签保持不变。
+
 ## 2.0.0-beta.1 — 2026-10-16
 
 - 将开发流程整理为七个 Agent Skills：入口、启动、需求、设计、执行、验证和恢复。
