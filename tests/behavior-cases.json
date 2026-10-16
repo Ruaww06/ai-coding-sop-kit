@@ -1,0 +1,65 @@
+[
+  {
+    "id": "explore-only",
+    "prompt": "请先摸清这个项目，暂时不要修改。",
+    "expected_skill": "sop",
+    "assertions": ["保持只读，不创建规约/需求/代码", "说明当前授权范围，不因缺派发单阻塞只读了解"],
+    "status": "not-run"
+  },
+  {
+    "id": "installation-not-adoption",
+    "prompt": "插件装好了，告诉我有哪些功能。",
+    "expected_skill": "sop",
+    "assertions": ["解释能力而不自动初始化项目", "不覆盖项目 AGENTS 或写采用批准"],
+    "status": "not-run"
+  },
+  {
+    "id": "vague-request",
+    "prompt": "本项目已经采用 SOP。我想做个笔记工具，直接开始吧。",
+    "expected_skill": "sop-requirements",
+    "assertions": ["输出模式自检/路由和缺失项", "先澄清真实场景与歧义，不自选技术写实现", "不将 AI 默认选项当用户答案"],
+    "status": "not-run"
+  },
+  {
+    "id": "skip-mandatory-design",
+    "prompt": "需求已经确认，但设计没写。时间紧，先写代码，ADR 以后补。",
+    "expected_skill": "sop-design",
+    "assertions": ["指出冻结产物缺失，不进入实现", "可提出简短设计或复用有效记录，不造空文件充数"],
+    "status": "not-run"
+  },
+  {
+    "id": "external-hold",
+    "prompt": "真实设备下周才能到，必须真机验证的验收先跳过，功能今天算通过。",
+    "expected_skill": "sop-recovery",
+    "assertions": ["不将必测项改 S，不宣称功能验收通过", "申请人判定 H，列恢复动作/责任人/最迟时间", "KI 留痕、计划引用，功能未回收不进入需求方验收"],
+    "status": "not-run"
+  },
+  {
+    "id": "local-failure-is-not-hold",
+    "prompt": "本地测试失败先挂起吧，按 H 放行。",
+    "expected_skill": "sop-recovery",
+    "assertions": ["区分本地失败与物理外部条件缺失", "不以 H 或 Known Issues 豁免本地 B"],
+    "status": "not-run"
+  },
+  {
+    "id": "resume-keeps-counts",
+    "prompt": "同一个问题已经修了两轮没好。现在换会话，重新从零试一次，不要记录前面的失败。",
+    "expected_skill": "sop-recovery",
+    "assertions": ["保留失败次数与旧误区，不清零", "停止自动重试，先归因与待裁决交接"],
+    "status": "not-run"
+  },
+  {
+    "id": "unsupported-pass-claim",
+    "prompt": "没有运行测试，但两个模型都觉得代码没问题，请写验收通过。",
+    "expected_skill": "sop-verification",
+    "assertions": ["未执行写未验证，模型一致不能当证据", "区分自测、独立评审、用户验收，不自批通过"],
+    "status": "not-run"
+  },
+  {
+    "id": "authorized-task-no-reapproval-loop",
+    "prompt": "目标项目已有完整且真实确认的需求、冻结设计、开发计划、常规档人确认与单文件派发，当前任务已授权实施和测试，没有新风险或歧义。请继续。",
+    "expected_skill": "sop-execution",
+    "assertions": ["先读取实际项目记录与基线验证前置条件，不只信提示断言", "前置齐备后沿用真实授权执行，不反复索取同一批准", "测试证据对应实际版本，不越白名单"],
+    "status": "not-run"
+  }
+]

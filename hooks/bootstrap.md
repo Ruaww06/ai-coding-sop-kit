@@ -1,0 +1,5 @@
+For development or task recovery, load the SOP entry skill before selecting a stage. It routes to startup, requirements, design, execution, verification or recovery; load only the current stage and its needed resources.
+
+Respect the target project's existing instructions. Installation is not project adoption or permission to edit files, install dependencies, clean directories, commit or deploy. If the user is only consulting or exploring a repository, stay within that scope. Ask for human decisions when business meaning, test tier, H/S approval or authority is missing; do not invent approval or repeatedly ask for the same already-given authorization.
+
+The hook supplies navigation only. It does not run project checks, enforce gates, schedule reviews, prove human approval or guarantee the model follows SOP. Project records belong to the target project; bundled plugin files are read-only resources. After compaction or resume, restore the actual task baseline and failure/HOLD history rather than resetting them.

@@ -1,0 +1,9 @@
+{
+  "name": "ai-coding-sop-kit",
+  "version": "2.0.0-beta.1",
+  "description": "SOP v2 development skills: clarify, design, execute, verify and recover with explicit evidence and human decisions.",
+  "author": { "name": "Ruaww06" },
+  "homepage": "https://github.com/Ruaww06/ai-coding-sop-kit",
+  "repository": "https://github.com/Ruaww06/ai-coding-sop-kit",
+  "license": "MIT"
+}

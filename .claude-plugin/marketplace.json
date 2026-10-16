@@ -1,0 +1,12 @@
+{
+  "name": "ai-coding-sop-marketplace",
+  "owner": { "name": "Ruaww06" },
+  "metadata": { "description": "AI Coding SOP Kit development workflow skills." },
+  "plugins": [
+    {
+      "name": "ai-coding-sop-kit",
+      "source": "./",
+      "description": "Shareable SOP v2 skills for evidence-based AI-assisted development."
+    }
+  ]
+}

@@ -1,16 +1,13 @@
-# DeepSeek Harness 接入
+# DeepSeek Harness 手动接入
 
-本说明对应官方仓库 `deepseek-ai/deepseek-harness`，不是在其他客户端中仅替换模型。
+本说明针对官方 `deepseek-ai/deepseek-harness`，不是仅在别的客户端替换 DeepSeek 模型。
 
-选择目标项目根目录为工作区。官方指令插件支持 AGENTS.md；base 组合默认集成，但 profile 可以关闭，需要可用的文件系统提供方。配置、预算和版本可能影响实际加载，先核对所用组合。
+当前未制作专用 Harness 插件/自动安装器。先核对所用版本/profile 的指令、文件系统及 Skill 提供方，再按 [整组安装说明](../../installation.md) 注册同一 `skills/` 正文。保留所有相邻技能与公共资源，不只复制旧兼容入口。
 
-官方本地 Skill 提供方支持项目 `.agents/skills/`。确认相关提供方/消费方启用后，可发现 sop；未发现也直接读取工作流正文。不要套用其他客户端的斜杠命令。
+发现或快捷调用不确定时由用户要求实际读取入口，不猜其他客户端斜杠命令。没有对应的启动注入代码，不能声称已自动加载或压缩后自动恢复。
 
-指令插件不解析 Claude 的 `@path` 导入语法，本包不依赖该语法。使用 README 保底入口即可引导实际读取。
-
-本包不安装框架、插件或配置，不保证任何本地 profile 的行为。需验证实际读取、必要停手、范围控制、真实验证及跨会话恢复。项目独立检查入口不会因换工具而变成可省略项。
+不改项目规约和全局设置，不因安装批准开发。需实测读取、阶段判断、停手、真实验证与跨会话恢复；当前未实际安装验收。
 
 官方依据：
 - https://github.com/deepseek-ai/deepseek-harness
-- https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/context/agent-instructions/README.zh.md
 - https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/subsystems/skills.zh.md
