@@ -1,5 +1,17 @@
 # 安装、更新与移除
 
+## 让 Agent 安装（DeepSeek Harness）
+
+在 Harness 选中业务项目，把下面一句话发给 Agent：
+
+```text
+请获取并遵循 https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md，将 AI Coding SOP Kit 安装到当前 DeepSeek Harness 项目；遇到同名冲突先询问。
+```
+
+[安装指南](../INSTALL.md)让 Agent 负责获取、完整性检查、安装和结果验证。默认目标为选中项目的 `.dsh/skills/`，完整安装七个技能，并报告实际来源 commit 与加载结果。它不修改账户、密钥、全局配置或业务规约，也不自动开始业务开发。
+
+需要当前 profile 提供技能发现/加载与必要文件能力。文件复制成功不等于运行中会话已发现新技能；需重开会话时应明确提示。此方式依据官方技能提供方文档设计，尚未完成 Harness 端到端实测。
+
 ## Claude Code：加载 beta
 
 需要已安装并登录的 Claude Code，以及用于获取源码的 Git。
@@ -61,7 +73,8 @@ claude --plugin-dir "/absolute/path/to/ai-coding-sop-kit-beta"
 | --- | --- |
 | Claude Code 本地插件 | 已验证本地发现、startup、原生 resume 和有限任务场景 |
 | Claude Code marketplace | 当前不提供 |
-| Kimi / DeepSeek Harness | 手动接入说明，未实测原生安装 |
+| DeepSeek Harness | Agent 安装指南，端到端安装/加载未实测 |
+| Kimi | 手动接入说明，未实测原生安装 |
 | 其他文件型 Agent | 可按能力显式读入口，不承诺原生发现 |
 
 clear／compact、其他系统及行为测试的局限见[测试与兼容性](testing.md)。

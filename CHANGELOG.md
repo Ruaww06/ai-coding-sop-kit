@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 增加 DeepSeek Harness 的一句话 Agent 安装入口与项目级安装指南；不修改全局配置，遇同名冲突先确认，文件安装与宿主加载分别验证。端到端接入尚未实测。
+
 - 移除旧 `.agents/skills/sop` 兼容入口和暂不提供的 marketplace 清单。
 - 保留插件元数据和 GitHub CI；安装说明改为最新 beta 分支获取，既有版本标签保持不变。
 

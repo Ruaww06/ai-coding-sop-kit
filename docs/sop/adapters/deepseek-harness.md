@@ -1,13 +1,32 @@
-# DeepSeek Harness 手动接入
+# DeepSeek Harness 接入
 
-本说明针对官方 `deepseek-ai/deepseek-harness`，不是仅在别的客户端替换 DeepSeek 模型。
+针对官方 `deepseek-ai/deepseek-harness`，不是只在其他客户端替换模型。
 
-当前未制作专用 Harness 插件/自动安装器。先核对所用版本/profile 的指令、文件系统及 Skill 提供方，再按 [整组安装说明](../../installation.md) 注册同一 `skills/` 正文。保留所有相邻技能与公共资源，不只复制旧兼容入口。
+## 一句话交给 Agent
 
-发现或快捷调用不确定时由用户要求实际读取入口，不猜其他客户端斜杠命令。没有对应的启动注入代码，不能声称已自动加载或压缩后自动恢复。
+在 Harness 选中你的业务项目，然后发送：
 
-不改项目规约和全局设置，不因安装批准开发。需实测读取、阶段判断、停手、真实验证与跨会话恢复；当前未实际安装验收。
+```text
+请获取并遵循 https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md，将 AI Coding SOP Kit 安装到当前 DeepSeek Harness 项目；遇到同名冲突先询问。
+```
 
-官方依据：
-- https://github.com/deepseek-ai/deepseek-harness
-- https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/subsystems/skills.zh.md
+Agent 的操作、冲突处理及校验要求见 [安装指南](../../../INSTALL.md)。你不需要手工寻找目录或搬文件。
+
+## 发现与加载
+
+官方文件系统技能提供方支持项目级 `<projectRoot>/.dsh/skills/`。七个技能目录直接位于该目录下，共享资源保留在 `sop/references/` 与 `sop/assets/`。projectRoot 为最近含 `.git` 的祖先目录，没有 Git 根时用会话 cwd；与选中项目范围不一致时先确认，不擅自安装到父目录。
+
+在启用相应技能组件的 profile 中，模型可通过 `skill` 工具加载名称 `sop`。这是模型工具调用，不是 shell 命令；不套用 Claude 命名空间，也不假定 `/sop` 等 UI 快捷语法。文件安装后可能需要新会话才能发现技能。
+
+安装仅提供技能，不表示采用完整 SOP 或批准写业务代码。指南不移植 Claude hook，不修改项目规约/全局配置，不保证压缩后自动恢复。
+
+## 验证状态
+
+已核对官方技能提供方文档与项目目录约定，但未在 Harness 中进行端到端安装、加载或行为验收。实际能力取决于所用版本/profile；应分别核对文件完整性、技能发现、资源读取和行为，不能只凭模型说“已安装”判断成功。
+
+官方依据（核对版本）：
+
+- [Skills 子系统](https://github.com/deepseek-ai/deepseek-harness/blob/86a402200d95fecef4529d969836f1fe13c6cb0d/docs/subsystems/skills.zh.md)
+- [技能目录配置](https://github.com/deepseek-ai/deepseek-harness/blob/86a402200d95fecef4529d969836f1fe13c6cb0d/docs/config-catalog.md)
+
+其他加载方式和兼容范围见 [安装说明](../../installation.md)。

@@ -82,6 +82,14 @@ class PackageTests(unittest.TestCase):
             self.assertIn("索引", text)
             self.assertNotIn("```markdown", text)
         self.assertFalse((ROOT / ".agents/skills/sop/SKILL.md").exists())
+        guide = (ROOT / "INSTALL.md").read_text()
+        for skill in EXPECTED:
+            self.assertRegex(guide, rf"(?m)^[ \t]*{re.escape(skill)}[ \t]*$")
+        self.assertIn(".dsh/skills/", guide)
+        self.assertIn("加载待验证", guide)
+        entry = "https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md"
+        for name in ["README.md", "docs/installation.md", "docs/sop/adapters/deepseek-harness.md"]:
+            self.assertIn(entry, (ROOT / name).read_text())
 
     def test_hook_configuration(self):
         config = json.loads((ROOT / "hooks/hooks.json").read_text())

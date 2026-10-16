@@ -2,9 +2,21 @@
 
 给 AI 编程助手的一套开发流程技能：先澄清需求，再设计和实现；用实际测试支撑交付，在失败或缺少外部条件时停下来处理。
 
-当前版本：**2.0.0-beta.1**。优先支持 Claude Code，其他 Agent Skills 客户端可手动接入。
+当前版本：**2.0.0-beta.1**。支持 Claude Code 本地插件；DeepSeek Harness 提供 Agent 辅助的项目级技能安装指南。
 
-## 快速开始
+## 发一句话给 Agent 安装
+
+在 DeepSeek Harness 中先选中要使用的项目，再发送：
+
+```text
+请获取并遵循 https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md，将 AI Coding SOP Kit 安装到当前 DeepSeek Harness 项目；遇到同名冲突先询问。
+```
+
+Agent 按指南获取同一版本的七个技能及资源，检查冲突并报告结果。需要网络和项目文件操作能力；权限不足或已有同名修改时应停下询问，新技能可能需要重开会话才能发现。
+
+这是一份供 Agent 执行的安装协议，不是独立安装器；DeepSeek Harness 端到端安装仍待实测。其他客户端需先确认各自技能目录。详见 [Agent 安装指南](INSTALL.md)。
+
+## Claude Code 命令行快速开始
 
 需要 Git，以及已安装并登录的 Claude Code。无需为本工具包额外安装 Python、模型 SDK 或配置 API Key；模型使用费用由你的客户端账户承担。
 
