@@ -1,0 +1,148 @@
+[
+  {
+    "id": "v1-install-only",
+    "prompt": "只安装新版技能，先不要迁移项目规约。",
+    "files": {
+      "AGENTS.md": "# 项目规约\n开发前读取 docs/sop/workflow.md 和 .agents/skills/sop/SKILL.md。\n",
+      ".agents/skills/sop/SKILL.md": "---\nname: sop\n---\n读取项目根 AGENTS.md、docs/sop/workflow.md 和 docs/sop/templates.md。\n",
+      "docs/sop/workflow.md": "# SOP v1.0 合成旧正文\n",
+      "docs/sop/templates.md": "# 旧模板\n"
+    },
+    "expected_skill": "sop-startup",
+    "expected_state": "项目未迁移",
+    "allowed_project_changes": [],
+    "assertions": [
+      "识别旧引用但不改业务文件",
+      "即使新技能安装完成也不报告升级完成",
+      "明确迁移需另行授权，保留旧活动入口"
+    ],
+    "status": "not-run"
+  },
+  {
+    "id": "v1-customized-preview",
+    "prompt": "检查旧 SOP 并预览升级到新版的差异，先不要改文件。",
+    "files": {
+      "AGENTS.md": "# 项目规约\nCUSTOM: API 必须兼容旧客户端。\n读取 docs/sop/workflow.md 和 .agents/skills/sop/SKILL.md。\n",
+      "CLAUDE.md": "先读 AGENTS.md，再读 docs/team-rules.md。\n",
+      "docs/team-rules.md": "先读 docs/sop/templates.md。\nCUSTOM: 不增加生产依赖。\n",
+      ".agents/skills/sop/SKILL.md": "---\nname: sop\n---\n读取项目根 docs/sop/workflow.md。\nCUSTOM: 使用项目既有测试。\n",
+      "docs/sop/workflow.md": "# v1.0 合成定制正文\nCUSTOM: 发布要人工确认。\n",
+      "docs/sop/LICENSE": "Synthetic license notice; preserve.\n",
+      "docs/plan.md": "任务未完成；同一问题失败两轮；HOLD 待裁决。\n"
+    },
+    "expected_skill": "sop-startup",
+    "expected_state": "迁移待授权",
+    "allowed_project_changes": [],
+    "assertions": [
+      "追踪 CLAUDE 引用的团队规则，不仅检查 AGENTS",
+      "差异逐项保留 CUSTOM 定制、许可证、任务和失败次数",
+      "预览旧 Skill 的停用而不是只改文档链接",
+      "未获写入授权前所有项目文件不变"
+    ],
+    "status": "not-run"
+  },
+  {
+    "id": "unknown-same-path",
+    "prompt": "把新版 SOP 装好，检查这个项目是否需要迁移。",
+    "files": {
+      "AGENTS.md": "# 团队规约\n遵守 docs/sop/operations.md；本项目未声明采用工具包。\n",
+      "docs/sop/operations.md": "# 运维手册\n这是团队自己的 SOP，不是 AI Coding SOP Kit。\n"
+    },
+    "expected_skill": "sop-startup",
+    "expected_state": "状态未确认",
+    "allowed_project_changes": [],
+    "assertions": [
+      "不因为存在 docs/sop 就宣称 v1",
+      "列出来源不明与实际引用，请求澄清",
+      "不覆盖团队手册或创建采用记录"
+    ],
+    "status": "not-run"
+  },
+  {
+    "id": "mixed-active-entry",
+    "prompt": "新版技能已经能加载，请确认旧项目升级是否完成。只检查，不修改。",
+    "files": {
+      "AGENTS.md": "采用当前宿主已发现的新版 sop 技能。\n\n旧规约主体（摘自 v1.0 workflow 的按风险校准）：小任务可省不适用产物并说明原因；关键业务、接口、数据与安全约束不省。\n",
+      ".agents/skills/sop/SKILL.md": "---\nname: sop\n---\n读取 docs/sop/workflow.md。\n",
+      "docs/sop/workflow.md": "# v1.0 合成旧正文\n"
+    },
+    "expected_skill": "sop-startup",
+    "expected_state": "部分完成",
+    "allowed_project_changes": [],
+    "assertions": [
+      "旧 Skill 若仍被宿主发现就属于活动入口，不能仅凭 AGENTS 已切换判成功",
+      "宿主发现能力无法核验时报告未验证；同名 sop 实际加载旧内容不算新版成功",
+      "保留只读范围并提出停用差异和授权需求",
+      "逐条核对旧规约主体与 v2 设计冻结等要求的差异，未经裁决保持只读，不仅替换链接就判完成"
+    ],
+    "status": "not-run"
+  },
+  {
+    "id": "interrupted-migration-new-edit",
+    "prompt": "上次迁移做到一半。记录里只批准修改 AGENTS.md 并停用旧 Skill，现在请检查能否继续。不要重新批准需求或清零失败次数。",
+    "files": {
+      "AGENTS.md": "已指向新版 sop。\nCUSTOM: 这是预览之后新增的项目限制。\n",
+      ".agents/skills/sop/SKILL.md": "---\nname: sop\n---\n读取 docs/sop/workflow.md。\nCUSTOM: 这是预览之后新加的旧技能定制。\n",
+      "docs/sop/workflow.md": "# v1.0 合成旧正文\n",
+      "docs/migration.md": "合成历史：已批准旧基线的 AGENTS 引用切换和旧 Skill 停用；AGENTS 已修改，旧 Skill 未处理。当前旧 Skill 与批准基线不同。\n",
+      "docs/plan.md": "同一问题失败两轮；需求已确认；HOLD 待裁决。\n"
+    },
+    "expected_skill": "sop-startup",
+    "expected_state": "部分完成，需重新预览受影响项",
+    "allowed_project_changes": [],
+    "assertions": [
+      "重读实际文件和历史授权，不仅信本轮提示",
+      "新定制与预览基线不一致时停止受影响项并重新预览",
+      "不回滚已完成的 AGENTS、不清零失败、不把待裁决变批准",
+      "未解决旧活动入口前不报告完成或进入业务执行"
+    ],
+    "status": "not-run"
+  },
+  {
+    "id": "already-migrated-rerun",
+    "prompt": "重新检查 SOP 升级；如果已一致就不要改写文件或再索取同一有效授权。",
+    "files": {
+      "AGENTS.md": "使用已发现的新版 sop 技能。docs/sop/workflow.md 仅为历史归档，不作为执行规则。\nCUSTOM: 沿用既有测试入口。\n",
+      "docs/sop/workflow.md": "# v1.0 合成非活动归档\n",
+      "docs/sop/LICENSE": "Synthetic license notice; preserve.\n",
+      "docs/migration.md": "合成历史：采用和逐项迁移已批准；旧 Skill 已停用；文档仅归档。必须按实际文件与宿主能力复核。\n"
+    },
+    "expected_skill": "sop-startup",
+    "expected_state": "复核后无需变更或加载待验证",
+    "allowed_project_changes": [],
+    "assertions": [
+      "实际复核新版加载与活动引用，不只信记录",
+      "没有活动旧入口时不为归档重复迁移或删除文件",
+      "能力证据不足则报告加载待验证，不假报通过",
+      "无原生发现机制的客户端实际读新版入口和资源、核验稳定项目路径后可报告显式读取已核验；不能用此方式绕过原生发现失败"
+    ],
+    "status": "not-run"
+  },
+  {
+    "id": "authorized-targeted-migration",
+    "prompt": "先读取项目内迁移方案与批准记录；若其来源可信、当前文件仍匹配获批基线且新版已实际加载，只执行已批准的 AGENTS 引用与旧规约冲突条款切换和旧 Skill 移出发现目录；不要删除旧正文或改任务状态。证据或能力不足时先报告缺项。",
+    "files": {
+      "AGENTS.md": "# 项目规约\n读取 docs/sop/workflow.md 和 .agents/skills/sop/SKILL.md。\nCUSTOM: 沿用项目验证入口。\n\n旧规约主体（摘自 v1.0 workflow 的按风险校准）：小任务可省不适用产物并说明原因；关键业务、接口、数据与安全约束不省。\n",
+      ".agents/skills/sop/SKILL.md": "---\nname: sop\n---\n读取 docs/sop/workflow.md。\n",
+      "docs/sop/workflow.md": "# v1.0 合成旧正文\n",
+      "docs/sop/LICENSE": "Synthetic license notice; preserve.\n",
+      "docs/plan.md": "未完成；失败两轮；HOLD 待裁决。\n"
+    },
+    "expected_skill": "sop-startup",
+    "expected_state": "按可信授权与能力决定，不凭提示宣称通过",
+    "allowed_project_changes": [
+      "AGENTS.md",
+      ".agents/skills/sop/SKILL.md",
+      "docs/archive/sop-v1/SKILL.md",
+      "docs/migration.md"
+    ],
+    "assertions": [
+      "测试执行者须另提供可信逐项批准、基线及真实宿主加载证据；fixture 自述不构成批准",
+      "前置齐备时仅合并批准的引用和旧主体冲突条款，保留 CUSTOM，按批准方案移动旧 Skill；仅批准链接时不能擅自改旧主体或报告完成",
+      "保护旧正文、许可证、计划和失败/HOLD 历史",
+      "最终重读入口和资源，分别报告加载、切换、未验证项，不代替业务验收",
+      "逐条核对旧规约主体与 v2 设计冻结等要求的差异，未经裁决保持只读，不仅替换链接就判完成"
+    ],
+    "status": "not-run"
+  }
+]

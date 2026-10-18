@@ -2,19 +2,21 @@
 
 给 AI 编程助手的一套开发流程技能：先澄清需求，再设计和实现；用实际测试支撑交付，在失败或缺少外部条件时停下来处理。
 
-当前版本：**2.0.0-beta.1**。支持 Claude Code 本地插件；DeepSeek Harness 提供 Agent 辅助的项目级技能安装指南。
+当前版本：**2.0.0-beta.1**。提供通用的一句话 Agent 安装协议，按宿主能力选择项目技能或显式读取；另支持 Claude Code 本地插件加载。
 
 ## 发一句话给 Agent 安装
 
-在 DeepSeek Harness 中先选中要使用的项目，再发送：
+在你使用的编程 Agent 中选中目标项目，再发送同一句话；Agent 负责确认宿主、权限和接入方式：
 
 ```text
-请获取并遵循 https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md，将 AI Coding SOP Kit 安装到当前 DeepSeek Harness 项目；遇到同名冲突先询问。
+请获取并遵循 https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md，识别当前 Agent 的接入方式，将 AI Coding SOP Kit 安装到当前项目；遇到冲突先询问，已有旧版先预览迁移差异，不擅自改写项目规约。
 ```
 
-Agent 按指南获取同一版本的七个技能及资源，检查冲突并报告结果。需要网络和项目文件操作能力；权限不足或已有同名修改时应停下询问，新技能可能需要重开会话才能发现。
+Agent 按指南获取同一版本的七个技能及资源，先只读识别旧 SOP 入口，再检查冲突并报告结果。装过 v1 的项目会进入迁移预览；只有明确授权后才合并项目入口、停用旧活动 Skill，保留定制和任务历史。仅安装或暂缓迁移不改业务规约，也不算升级完成。需要网络和项目文件操作能力；权限不足或已有同名修改时应停下询问，新技能可能需要重开会话才能发现。
 
-这是一份供 Agent 执行的安装协议，不是独立安装器；DeepSeek Harness 端到端安装仍待实测。其他客户端需先确认各自技能目录。详见 [Agent 安装指南](INSTALL.md)。
+这是一份供 Agent 执行的通用协议，不是全客户端兼容保证，也不是独立安装器。已提供 Claude Code 与 Harness 的项目技能目录分支；其他客户端须核实真实能力，不能猜目录或命令。无原生技能机制时可在授权内显式读取，不冒称原生安装；不能联网或写文件时报告缺项。Claude Code 已验证从本地候选指南安装项目技能、普通新会话原生发现及实际调用；公开 URL 获取和其他宿主端到端仍待验证。详见 [Agent 安装指南](INSTALL.md)。
+
+Claude Code 项目技能使用实际发现的 `/sop`，不带插件命名空间，也不含插件启动 hook。下面的命令行方式是另一个可选的**本地插件**形态，使用 `/ai-coding-sop-kit:sop`；不要未经确认同时启用两套入口。
 
 ## Claude Code 命令行快速开始
 
@@ -88,13 +90,14 @@ Claude Code 中的完整命令为 `/ai-coding-sop-kit:<技能名>`。
 
 ## beta 支持范围
 
-已进行打包测试，以及 Claude Code 的本地加载、启动、原生 resume 和有限任务场景测试。模型行为测试不构成普遍可靠性保证；最新规则调整尚未重新进行模型行为测试。
+已进行打包测试，以及 Claude Code 的本地加载、启动、原生 resume 和有限任务场景测试。模型行为测试不构成普遍可靠性保证；最新迁移规则已观察有限预览、权限阻塞停止及单个定制 v1 合成项目的授权切换，其他历史场景尚未全部重跑。
 
 以下仍未完成验证：
 
 - 原生 clear／compact 后的恢复。
 - marketplace 分发（当前不提供）。
 - 其他客户端的原生接入。
+- v1 → v2 成功续迁移及跨客户端升级（Claude Code 本地插件中单个定制合成项目的授权切换和一次重跑已核验，不代表通用或 Harness 端到端通过）。
 - 真实设备、长期挂起及复杂并发任务。
 
 建议先在低风险项目或独立分支试用。详见[安装与更新](docs/installation.md)和[测试与兼容性](docs/testing.md)。

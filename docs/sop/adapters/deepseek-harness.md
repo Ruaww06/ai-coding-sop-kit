@@ -7,10 +7,10 @@
 在 Harness 选中你的业务项目，然后发送：
 
 ```text
-请获取并遵循 https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md，将 AI Coding SOP Kit 安装到当前 DeepSeek Harness 项目；遇到同名冲突先询问。
+请获取并遵循 https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md，识别当前 Agent 的接入方式，将 AI Coding SOP Kit 安装到当前项目；遇到冲突先询问，已有旧版先预览迁移差异，不擅自改写项目规约。
 ```
 
-Agent 的操作、冲突处理及校验要求见 [安装指南](../../../INSTALL.md)。你不需要手工寻找目录或搬文件。
+这是与其他 Agent 共用的一句话入口；Agent 识别 Harness 后使用对应分支。操作、冲突处理及校验要求见 [安装指南](../../../INSTALL.md)。你不需要手工寻找目录或搬文件。
 
 ## 发现与加载
 
@@ -18,7 +18,7 @@ Agent 的操作、冲突处理及校验要求见 [安装指南](../../../INSTALL
 
 在启用相应技能组件的 profile 中，模型可通过 `skill` 工具加载名称 `sop`。这是模型工具调用，不是 shell 命令；不套用 Claude 命名空间，也不假定 `/sop` 等 UI 快捷语法。文件安装后可能需要新会话才能发现技能。
 
-安装仅提供技能，不表示采用完整 SOP 或批准写业务代码。指南不移植 Claude hook，不修改项目规约/全局配置，不保证压缩后自动恢复。
+安装仅提供技能，不表示采用完整 SOP 或批准写业务代码。指南先只读识别旧项目入口；旧版迁移先预览差异，经明确授权才修改项目规约、停用旧活动入口，保留定制与历史。仅安装不改项目规约，不移植 Claude hook，不修改全局配置，不保证压缩后自动恢复。迁移与中断恢复的真实 Agent 行为尚待实测。
 
 ## 验证状态
 

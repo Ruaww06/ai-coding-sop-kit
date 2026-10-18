@@ -74,7 +74,7 @@ class PackageTests(unittest.TestCase):
             for target in local_links(path):
                 self.assertTrue(target.resolve().is_relative_to(base), str(target))
         self.assertEqual(len(list(base.glob("sop/assets/*.md"))), 13)
-        self.assertEqual(len(list(base.glob("sop/references/*.md"))), 8)
+        self.assertEqual(len(list(base.glob("sop/references/*.md"))), 9)
 
     def test_docs_are_indexes_not_duplicate_rules(self):
         for name in ["workflow", "templates"]:
@@ -86,10 +86,17 @@ class PackageTests(unittest.TestCase):
         for skill in EXPECTED:
             self.assertRegex(guide, rf"(?m)^[ \t]*{re.escape(skill)}[ \t]*$")
         self.assertIn(".dsh/skills/", guide)
+        self.assertIn(".claude/skills/", guide)
         self.assertIn("加载待验证", guide)
+        self.assertIn("显式读取已核验，原生发现不适用", guide)
+        self.assertIn("不猜技能目录", guide)
+        self.assertIn("不能联网", guide)
+        self.assertIn("不自动注册 marketplace", guide)
+        self.assertNotIn("这份指南只针对 DeepSeek Harness", guide)
         entry = "https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md"
+        instruction = f"请获取并遵循 {entry}，识别当前 Agent 的接入方式，将 AI Coding SOP Kit 安装到当前项目；遇到冲突先询问，已有旧版先预览迁移差异，不擅自改写项目规约。"
         for name in ["README.md", "docs/installation.md", "docs/sop/adapters/deepseek-harness.md"]:
-            self.assertIn(entry, (ROOT / name).read_text())
+            self.assertIn(instruction, (ROOT / name).read_text())
 
     def test_hook_configuration(self):
         config = json.loads((ROOT / "hooks/hooks.json").read_text())

@@ -1,18 +1,24 @@
 # 安装、更新与移除
 
-## 让 Agent 安装（DeepSeek Harness）
+## 让任意编程 Agent 安装
 
-在 Harness 选中业务项目，把下面一句话发给 Agent：
+在所用 Agent 中选中业务项目，把同一句话发给 Agent，由它确认能力与接入方式：
 
 ```text
-请获取并遵循 https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md，将 AI Coding SOP Kit 安装到当前 DeepSeek Harness 项目；遇到同名冲突先询问。
+请获取并遵循 https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md，识别当前 Agent 的接入方式，将 AI Coding SOP Kit 安装到当前项目；遇到冲突先询问，已有旧版先预览迁移差异，不擅自改写项目规约。
 ```
 
-[安装指南](../INSTALL.md)让 Agent 负责获取、完整性检查、安装和结果验证。默认目标为选中项目的 `.dsh/skills/`，完整安装七个技能，并报告实际来源 commit 与加载结果。它不修改账户、密钥、全局配置或业务规约，也不自动开始业务开发。
+[安装指南](../INSTALL.md)让 Agent 负责能力/宿主识别、获取、完整性检查、冲突处理和结果验证。Claude Code 项目技能目录是 `.claude/skills/`，Harness 是 `.dsh/skills/`，七个技能同层；未知宿主先核实文档，不直接沿用这些目录。无原生技能机制时可在取得授权后采用显式文件读取，并如实区分它与原生安装。不能联网/读写时报告缺项，不假称已安装。
 
-需要当前 profile 提供技能发现/加载与必要文件能力。文件复制成功不等于运行中会话已发现新技能；需重开会话时应明确提示。此方式依据官方技能提供方文档设计，尚未完成 Harness 端到端实测。
+只安装当前项目，不改账户、密钥或全局配置，不自动开始业务开发。先只读识别旧版/混合入口；业务规约迁移须先预览差异并获明确授权。已有本地插件或用户级同名技能时需确认采用方式和实际加载来源，不默认新增第二套入口。拒绝迁移或加载未验证时保留旧入口，分别报告技能安装与项目未迁移。
 
-## Claude Code：加载 beta
+### Claude Code 项目技能
+
+安装整组技能到当前项目 `.claude/skills/` 后，以实际发现的 `sop` 调用（用户入口 `/sop`），核对入口及共享资源来源。它不含 `.claude-plugin/`、SessionStart hook 或 `ai-coding-sop-kit:` 命名空间，不需要每次传 `--plugin-dir`。写入 `.claude/` 可能触发宿主的额外审批，安装授权不改变权限策略；被拒绝时停下，不绕过。
+
+需要时在同一项目新建会话核验，不自动启动模型进程。Claude Code 已有限验证本地候选指南的 Agent 文件安装、内容一致性、普通新会话原生发现及项目技能实际调用；公开 URL 获取仍待验证。Harness 端到端仍未实测；已有本地插件实测不能替代这些验证。
+
+## Claude Code：本地插件（可选）
 
 需要已安装并登录的 Claude Code，以及用于获取源码的 Git。
 
@@ -47,11 +53,13 @@ claude --plugin-dir "/absolute/path/to/ai-coding-sop-kit-beta"
 
 固定标签副本不会自动更新。升级时获取新版本的独立副本，阅读变更说明，再将 `--plugin-dir` 指向新目录。重启会话后核对版本，不假定运行中缓存已经更新。
 
+装过 v1 文档包的项目不能只更换 `--plugin-dir`：加载新版后对 `sop` 入口说“检查旧 SOP 并预览迁移，先不要改文件”。入口按[迁移协议](../skills/sop/references/migration.md)核对旧规则和活动 Skill，经授权后才切换；重跑前重读现状和授权，不覆盖新增定制。详见[旧项目迁移](sop/migration-v2.md)。
+
 停止在新会话中传入 `--plugin-dir` 即可停止加载该副本。项目中已创建的需求、计划和代码仍然保留；不要把移除插件理解为撤销项目改动。
 
 ## marketplace 状态
 
-当前不分发 marketplace 清单，仅提供源码加 `--plugin-dir` 的加载方式；请勿使用 marketplace 安装命令。既有标签的内容保持不变，精简目录结构的版本从下述 beta 分支获取。
+当前不分发 marketplace 清单。项目技能使用上述 Agent 安装协议；插件形态使用源码加 `--plugin-dir` 加载，请勿把仓库地址直接用于 marketplace 安装命令。既有标签的内容保持不变，精简目录结构的版本从下述 beta 分支获取。
 
 ## 其他 Agent Skills 客户端
 
@@ -71,6 +79,7 @@ claude --plugin-dir "/absolute/path/to/ai-coding-sop-kit-beta"
 
 | 接入方式 | 状态 |
 | --- | --- |
+| Claude Code 项目技能 | 本地候选文件安装、普通新会话原生发现及真实调用已有限验证；公开获取未验收 |
 | Claude Code 本地插件 | 已验证本地发现、startup、原生 resume 和有限任务场景 |
 | Claude Code marketplace | 当前不提供 |
 | DeepSeek Harness | Agent 安装指南，端到端安装/加载未实测 |
