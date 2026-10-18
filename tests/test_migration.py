@@ -49,7 +49,7 @@ class MigrationTests(unittest.TestCase):
                      "已完成且一致的步骤不重写", "不擅自删除新文件",
                      "没有冲突的 v1/v2 双路由", "不代表业务测试",
                      "显式读取已核验，原生发现不适用", "绕过宿主原生发现失败",
-                     "旧规约主体", "交人裁决"]:
+                     "旧规约主体", "交人裁决", "其他宿主", "多副本候选"]:
             with self.subTest(term=term):
                 self.assertIn(term, text)
         template = (ROOT / "skills/sop/assets/startup.md").read_text()
@@ -60,7 +60,8 @@ class MigrationTests(unittest.TestCase):
         cases = json.loads(CASES.read_text())
         expected = {"v1-install-only", "v1-customized-preview", "unknown-same-path",
                     "mixed-active-entry", "interrupted-migration-new-edit",
-                    "already-migrated-rerun", "authorized-targeted-migration"}
+                    "already-migrated-rerun", "authorized-targeted-migration",
+                    "cross-host-copy-reported", "cross-host-reference-drift"}
         self.assertEqual({case["id"] for case in cases}, expected)
         self.assertEqual(len(cases), len(expected))
         by_id = {case["id"]: case for case in cases}
@@ -69,6 +70,14 @@ class MigrationTests(unittest.TestCase):
             self.assertTrue(any("未经裁决" in item for item in by_id[name]["assertions"]))
         self.assertTrue(any("无原生发现机制" in item
                             for item in by_id["already-migrated-rerun"]["assertions"]))
+        for name in ["cross-host-copy-reported", "cross-host-reference-drift"]:
+            case = by_id[name]
+            self.assertTrue(any("其他宿主" in item for item in case["assertions"]))
+            self.assertEqual(case["allowed_project_changes"], [])
+        self.assertIn(".claude/skills/sop/SKILL.md",
+                      by_id["cross-host-copy-reported"]["files"])
+        self.assertIn(".claude/skills/",
+                      by_id["cross-host-reference-drift"]["files"]["AGENTS.md"])
         for case in cases:
             with self.subTest(case=case["id"]):
                 self.assertTrue(case["prompt"])

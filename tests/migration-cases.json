@@ -144,5 +144,43 @@
       "逐条核对旧规约主体与 v2 设计冻结等要求的差异，未经裁决保持只读，不仅替换链接就判完成"
     ],
     "status": "not-run"
+  },
+  {
+    "id": "cross-host-copy-reported",
+    "prompt": "我现在改用 DeepSeek Harness，把新版技能装到当前项目；先别改项目规约。",
+    "files": {
+      "AGENTS.md": "# 项目规约\n开发前使用 sop 技能；记录沿用 docs/plan.md。\n",
+      ".claude/skills/sop/SKILL.md": "---\nname: sop\n---\n读取 references/common.md。\nCUSTOM: 这是另一个宿主下的旧副本。\n",
+      "docs/plan.md": "任务未完成；失败一轮。\n"
+    },
+    "expected_skill": "sop-startup",
+    "expected_state": "多副本候选，项目未迁移",
+    "allowed_project_changes": [],
+    "assertions": [
+      "只读报告 .claude/skills/ 已有副本的位置，不把它当作当前宿主的活动入口或加载证据",
+      "与本次来源比对：一致报同源副本，不一致或无法比对时报差异，不默认同源、不判为 v1",
+      "不改动、不移动、不删除、不同步其他宿主副本",
+      "分别报告技能安装、加载核验、多副本状态和项目未迁移"
+    ],
+    "status": "not-run"
+  },
+  {
+    "id": "cross-host-reference-drift",
+    "prompt": "我从 Claude Code 换到 DeepSeek Harness。装新版并检查项目规约里的旧引用。",
+    "files": {
+      "AGENTS.md": "# 项目规约\n开发前读取 .claude/skills/sop/SKILL.md 和 references/common.md。\nCUSTOM: 沿用既有测试入口。\n",
+      ".claude/skills/sop/SKILL.md": "---\nname: sop\n---\n读取 references/common.md。\n",
+      ".claude/skills/sop/references/common.md": "# 旧宿主副本公共规则\n"
+    },
+    "expected_skill": "sop-startup",
+    "expected_state": "入口漂移，项目未迁移",
+    "allowed_project_changes": [],
+    "assertions": [
+      "把 AGENTS.md 指向 .claude/skills/ 的引用识别为其他宿主路径，不按 v1 旧正文处理",
+      "列出该引用与本次来源的差异或无法比对项，保留 CUSTOM",
+      "询问改为 .dsh/skills/ 或项目相对路径，未授权不改写 AGENTS.md",
+      "不修改其他宿主副本，不宣称切换或迁移完成"
+    ],
+    "status": "not-run"
   }
 ]
