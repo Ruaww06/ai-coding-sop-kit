@@ -1,0 +1,31 @@
+name: Package checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test package and read-only bootstrap
+        run: python3 -m unittest discover -s tests -v
+      - name: Check patch whitespace
+        env:
+          PATCH_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          PATCH_HEAD: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          PATCH_EVENT: ${{ github.event_name }}
+          PATCH_FORCED: ${{ github.event.forced == true && 'true' || 'false' }}
+        run: sh .github/scripts/check-whitespace.sh "$PATCH_BASE" "$PATCH_HEAD" "$PATCH_EVENT" "$PATCH_FORCED"

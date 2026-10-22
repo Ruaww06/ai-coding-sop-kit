@@ -1,16 +1,13 @@
-# Kimi Code 接入
+# Kimi Code 手动接入
 
-从目标项目根目录启动 Kimi Code。核对所用版本的项目指令与 Skills 发现规则，确认 AGENTS.md 和 `.agents/skills/sop/SKILL.md` 被加载或可读取。
+当前没有 Kimi 原生插件或 hook；使用同一份 `skills/` 正文，不复制一套 Kimi SOP。先按所用版本核对 Skills 发现规则，再依 [整组安装说明](../../installation.md) 将所有技能及资源放入实际支持的技能目录。
 
-支持相应命令的版本可显式使用 `/skill:sop <任务>`，但不是必需；通用入口已要求直接读取工作流正文。发现失败时使用 README 的保底指令，不跳过流程。
+Kimi 支持相应语法时可显式 `/skill:sop <任务>`，以当前客户端发现结果为准，不承诺所有版本有该命令。安装时复制完整 `skills/` 技能组；缺资源须报告，不跳过。
 
-不要用初始化命令覆盖已有 AGENTS.md。保留人工裁决渠道，避免让无需询问的模式代替用户决定业务规则或风险取舍。
+不改已有 AGENTS.md、全局配置或权限。无自动启动注入时显式读取入口；采用 SOP 仍需用户确认，安装不等于授权业务实现。
 
-本包不安装 Hooks、修改配置或保证某版本实际行为。官方 Hooks 文档描述异常时可能放行，因此不能成为唯一安全防线；若项目需要，另行核对版本、失败行为和覆盖范围。
-
-加载后验证：实际读取、需求歧义时停手、未验证不报通过、连续失败停手、跨会话恢复。客户端自报不是完整验收。
+需要实测：技能发现、阶段触发、歧义停机、真实验证、连续失败停止和跨会话恢复。当前未在 Kimi 中安装验证，不能仅凭官方格式说明称兼容验收通过。
 
 官方依据：
 - https://moonshotai.github.io/kimi-code/zh/customization/agents.html
 - https://moonshotai.github.io/kimi-code/zh/customization/skills.html
-- https://moonshotai.github.io/kimi-code/zh/customization/hooks.html
