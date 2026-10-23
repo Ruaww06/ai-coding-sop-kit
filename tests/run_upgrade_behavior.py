@@ -16,7 +16,6 @@ import time
 import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILLS = {"sop", "sop-design", "sop-execution", "sop-verification", "sop-recovery"}
 TAGS = {
     "v1.0": "d2b5049f9fb84353b3f848926acc0c690e71caf5",
     "v2.0.0-beta.1": "e2246a60c1e10d8214587c66c28b129dee387092",
@@ -26,6 +25,11 @@ TAGS = {
 def snapshot(directory):
     return {str(p.relative_to(directory)): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in directory.rglob("*") if p.is_file() and not p.is_symlink()}
+
+
+def manifest_skills(manifest):
+    return {Path(name).parts[1] for name in manifest
+            if len(Path(name).parts) == 3 and name.startswith("skills/") and name.endswith("/SKILL.md")}
 
 
 def materialize(ref, destination, prefixes):
@@ -172,7 +176,7 @@ def observe(run, case):
         "read_only_postcondition": not changed and not symlinks,
         "symlinks_after": symlinks,
         "active_skill_names": sorted(actual_skills),
-        "exact_current_group": (installed_files == expected_files and actual_skills == SKILLS
+        "exact_current_group": (installed_files == expected_files and actual_skills == manifest_skills(expected_manifest)
                                 and not any(p.startswith(".claude/skills/") for p in symlinks)),
         "api_constraint_retained": "public API compatibility must be preserved" in (project / "AGENTS.md").read_text(),
         "native_loading_verdict": "requires tool-result/source inspection; not inferred from agent summary",

@@ -12,7 +12,7 @@ import sys
 import time
 import uuid
 
-from run_upgrade_behavior import ROOT, SKILLS, snapshot
+from run_upgrade_behavior import ROOT, manifest_skills, snapshot
 
 TASK_COMMAND = "python3 -c \"from app import greeting; print(greeting())\""
 
@@ -36,7 +36,7 @@ def verify_existing(run):
         actual.pop("sop/LICENSE")
     if actual != expected or snapshot(project / "candidate") != manifest:
         raise RuntimeError("Installed group or source changed since the successful switch")
-    if {p.parent.name for p in (project / ".claude/skills").glob("*/SKILL.md")} != SKILLS:
+    if {p.parent.name for p in (project / ".claude/skills").glob("*/SKILL.md")} != manifest_skills(manifest):
         raise RuntimeError("Unexpected active skills")
     if any(p.is_symlink() for p in project.rglob("*")):
         raise RuntimeError("Unexpected symlink in synthetic project")

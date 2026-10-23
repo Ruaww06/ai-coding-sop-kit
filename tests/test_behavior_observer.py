@@ -1,5 +1,6 @@
 """Check behavior-run evidence accounting without invoking any model."""
 import json
+import shutil
 from pathlib import Path
 import tempfile
 import unittest
@@ -38,6 +39,27 @@ class BehaviorObserverTests(unittest.TestCase):
         second = observe(run, "preview-v1")
         self.assertFalse(second["exact_current_group"])
         self.assertIn("not inferred", second["native_loading_verdict"])
+
+    def test_observer_uses_frozen_source_for_five_and_six_skill_groups(self):
+        for names in [
+            {"sop", "sop-design", "sop-execution", "sop-verification", "sop-recovery"},
+            {"sop", "sop-requirements", "sop-design", "sop-execution", "sop-verification", "sop-recovery"},
+        ]:
+            with self.subTest(skills=len(names)):
+                run, case, project = self.fixture()
+                source = project / "candidate"
+                for name in names - {"sop"}:
+                    path = source / f"skills/{name}/SKILL.md"
+                    path.parent.mkdir()
+                    path.write_text(f"# {name}\n")
+                (run / "source-manifest.json").write_text(json.dumps(snapshot(source)))
+                shutil.copytree(source / "skills", project / ".claude/skills")
+                (case / "before.json").write_text(json.dumps(snapshot(project)))
+                self.assertTrue(observe(run, "preview-v1")["exact_current_group"])
+                extra = project / ".claude/skills/sop-unexpected/SKILL.md"
+                extra.parent.mkdir()
+                extra.write_text("# Unexpected\n")
+                self.assertFalse(observe(run, "preview-v1")["exact_current_group"])
 
     def test_protected_edits_and_candidate_edits_are_detected(self):
         run, case, project = self.fixture()

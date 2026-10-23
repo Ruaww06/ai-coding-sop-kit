@@ -1,11 +1,11 @@
 ---
 name: sop-design
-description: "Use when an authorized task needs an approach, unfamiliar capability, important technology choice, public contract or data decision, or reassessment of an existing design."
+description: "Researches and reviews the simplest complete design. Use when an approach, unfamiliar capability, important choice, public contract or data decision is needed, or an existing design or consequential change needs review."
 ---
 
 # Research Before Choosing
 
-Read [shared boundaries](../sop/references/common.md). Scale design work to its impact, not a mandatory architecture/model/ADR package. Investigate and clarify an unclear goal or consequential ambiguity; do not treat assumptions as approval.
+Read [shared boundaries](../sop/references/common.md). Reuse a valid requirements review; if consequential goals or behavior remain unclear or unreviewed, use [requirements](../sop-requirements/SKILL.md). Read-only feasibility research may support requirements before commitment; it does not approve requirements or design. Scale design work to impact, not a mandatory architecture/model/ADR package.
 
 ## Find existing solutions
 
@@ -37,8 +37,14 @@ Record what the change needs: inputs/outputs/errors/compatibility/callers for pu
 
 For an incremental change, state against the current baseline: what changes, what stays, affected callers and acceptance, and which evidence becomes invalid. Confirm consequential changes before implementation without re-explaining unchanged constraints. Split work by a single verifiable result; respect hard dependencies.
 
-## Exit
+## Review and exit
 
-The impact is identified, necessary research has a basis, consequential choices and viability conditions are confirmed, and necessary contracts, validation and recovery approaches are available. With sufficient existing decisions, proceed to execution. Design approval alone does not authorize implementation.
+Trace end-to-end behavior from user action through interfaces, business rules and data to observable results; define failure reporting and recovery across affected layers. Do not invent layers the task does not involve. Check inputs, outputs, errors, compatibility and relevant idempotency; data ownership/lifecycle, permissions and invariants; partial failure/concurrency; scale/resources; observability and exit costs.
+
+The design owner explains viability conditions and counterexamples. Have someone other than its drafter review consequential design against reviewed requirements, project facts and research, constructing failure scenarios rather than only checking document completeness. Competent technical review is required for the risks in shared boundaries. AI can propose counterexamples; model agreement does not prove viability.
+
+Retain the **reviewer, conclusion and important reasons** in existing records. If the design cannot meet requirements, assumptions lack evidence or necessary contracts are unclear, return for revision and review affected parts again. If business intent must change, refer to requirements rather than silently changing behavior in the design. Use [feedback](../sop-recovery/SKILL.md) for this route and incremental redispatch.
+
+Exit requires identified impact, supported research, reviewed consequential decisions and accessible contracts, validation and recovery approaches. Reuse valid reviewed baselines for unchanged/local decisions; no new design document is required. Design approval alone does not authorize implementation.
 
 Example: inspect project code and failure experience for an existing-interface fix. For new storage, also research mature options, applicable versions, data constraints and migration recovery—not just popular products.

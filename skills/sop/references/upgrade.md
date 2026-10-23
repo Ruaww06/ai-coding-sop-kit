@@ -8,6 +8,12 @@ Within the selected project and authorized installation scope, read applicable `
 
 Identify the origin using declared versions, content and available published source comparisons—not directory names alone. Unknown, modified or mixed origins need a difference preview, not a guessed conversion. Preserve task records, customization, licenses, failure counts and outstanding validation. Old B/H/S or HOLD records remain historical evidence; they do not become current approval, a passing result or a reset count.
 
+## Preserve v4 entry and project continuity
+
+The five v3 skill names, plugin namespace, project/local-plugin forms and `common.md` / `upgrade.md` paths remain available. v4 adds `sop-requirements`; do not treat it as an unexpected leftover. A v2 skill with the same name is not the v4 implementation: compare its full content and linked resources. `sop-startup` and v2 extra references/templates remain retired; preserve filled-in project records, not their obsolete active rules.
+
+v4 restores explicit requirements/design review, dependency planning and progress, and feedback decisions written into the basis before verified closure. Reuse existing valid review and authorization evidence for unchanged parts. For unreviewed material, review missing or affected decisions before dependent implementation; do not require a full rewrite. An upgrade is not retroactive approval and must not convert drafting, a v3 confirmation or model agreement into a human review. Preserve prior approval within its actual scope, failure counts, blocked items and outstanding validation. Installing new skills never starts business development or approves its completion.
+
 ## Preview a complete switch
 
 List the current entry, target source/version, affected files and rule clauses, retained customization, retired active entries, required permissions, verification and recovery approach. Inspect rules embedded in project entry files as well as links; replacing a link does not remove an old rule body. Do not retain conflicting old clauses under a generic "custom" label or remove them without a human decision.

@@ -15,7 +15,9 @@ PUBLISHED = {
     "v1.0": "d2b5049f9fb84353b3f848926acc0c690e71caf5",
     "v2.0.0-beta.1": "e2246a60c1e10d8214587c66c28b129dee387092",
     "v3.1.0-beta.1": "62f612e4466cf2f3c7420fb5d7acade00492deec",
+    "v3.1.0-beta.2": "b3f57ee0178e4afb9bbb802f2c4ca5eec27367a7",
 }
+V3_SKILLS = EXPECTED - {"sop-requirements"}
 
 
 @unittest.skipUnless(shutil.which("git"), "Git required for published-file regressions")
@@ -93,6 +95,43 @@ class PublishedUpgradeTests(unittest.TestCase):
         self.assertTrue(any(p.name == "stages.md" for p in missing))
         self.assertTrue(any("assets" in p.parts for p in missing))
 
+    def test_v3_beta2_upgrade_retains_entries_records_and_adds_requirements(self):
+        project = self.workspace()
+        self.materialize("v3.1.0-beta.2", project, ["skills"])
+        old_files = {p.relative_to(project / "skills") for p in (project / "skills").rglob("*") if p.is_file()}
+        records = {
+            "AGENTS.md": "Use project SOP skills. Preserve project API conventions.\n",
+            "requirements.md": "Reviewed by product peer; acceptance unchanged.\n",
+            "tasks.md": "Two failed fixes; required device check still pending.\n",
+        }
+        for name, content in records.items():
+            (project / name).write_text(content)
+        self.copy_current_skills(project / "skills")
+        current_files = {p.relative_to(ROOT / "skills") for p in (ROOT / "skills").rglob("*") if p.is_file()}
+        self.assertTrue(old_files <= current_files, "Previously published v3 entry/resource paths broke")
+        self.assertEqual({p.relative_to(project / "skills") for p in (project / "skills").rglob("*")
+                          if p.is_file()}, current_files)
+        self.assertEqual({p.parent.name for p in (project / "skills").glob("*/SKILL.md")}, EXPECTED)
+        for name, content in records.items():
+            self.assertEqual((project / name).read_text(), content)
+        for path in (project / "skills").rglob("*.md"):
+            for target in local_links(path):
+                self.assertTrue(target.exists(), str(target))
+        first = {p.relative_to(project): p.read_bytes() for p in project.rglob("*") if p.is_file()}
+        self.copy_current_skills(project / "skills")
+        self.assertEqual(first, {p.relative_to(project): p.read_bytes() for p in project.rglob("*") if p.is_file()})
+
+    def test_v2_requirements_name_does_not_mean_compatible_content(self):
+        project = self.workspace()
+        self.materialize("v2.0.0-beta.1", project, ["skills/sop-requirements"])
+        path = project / "skills/sop-requirements/SKILL.md"
+        current = ROOT / "skills/sop-requirements/SKILL.md"
+        self.assertNotEqual(path.read_bytes(), current.read_bytes())
+        self.assertTrue(any(not target.exists() for target in local_links(path)))
+        self.copy_current_skills(project / "skills")
+        self.assertEqual(path.read_bytes(), current.read_bytes())
+        self.assertTrue(all(target.exists() for target in local_links(path)))
+
     def test_v1_new_destination_leaves_active_old_references_and_customization(self):
         project = self.workspace()
         self.materialize("v1.0", project, ["AGENTS.md", ".agents/skills/sop", "docs/sop", "LICENSE"])
@@ -127,7 +166,7 @@ class PublishedUpgradeTests(unittest.TestCase):
         project = self.workspace()
         self.materialize("v3.1.0-beta.1", project, ["skills"])
         actual = {p.parent.name for p in (project / "skills").glob("*/SKILL.md")}
-        self.assertEqual(actual, EXPECTED)
+        self.assertEqual(actual, V3_SKILLS)
         for path in (project / "skills").rglob("*.md"):
             for target in local_links(path):
                 self.assertTrue(target.exists())

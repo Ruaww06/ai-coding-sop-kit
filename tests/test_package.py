@@ -11,7 +11,7 @@ import unittest
 from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED = {"sop", "sop-design", "sop-execution", "sop-verification", "sop-recovery"}
+EXPECTED = {"sop", "sop-requirements", "sop-design", "sop-execution", "sop-verification", "sop-recovery"}
 
 
 def local_links(path):
@@ -32,10 +32,17 @@ class PackageTests(unittest.TestCase):
     def test_manifests_and_version(self):
         plugin = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
         self.assertEqual(plugin["name"], "ai-coding-sop-kit")
-        self.assertEqual(plugin["version"], "3.1.0-beta.2")
+        self.assertEqual(plugin["version"], "4.0.0-beta.1")
         self.assertEqual({p.name for p in (ROOT / ".claude-plugin").iterdir()}, {"plugin.json"})
         for name in ["README.md", "CHANGELOG.md", "INSTALL.md"]:
             self.assertIn(plugin["version"], (ROOT / name).read_text())
+        readme = (ROOT / "README.md").read_text()
+        install = (ROOT / "INSTALL.md").read_text()
+        self.assertIn(f"refs/tags/v{plugin['version']}/INSTALL.md", readme)
+        self.assertIn(f"tag `v{plugin['version']}`", install)
+        for text in [readme, install]:
+            self.assertNotIn("unpublished", text)
+            self.assertNotIn("本地未发布", text)
 
     def test_distribution_has_no_legacy_rule_paths(self):
         actual = {p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md")}
@@ -61,7 +68,7 @@ class PackageTests(unittest.TestCase):
                 header = text.split("---", 2)[1]
                 self.assertEqual(re.search(r"^name: (.+)$", header, re.M).group(1), name)
                 value = json.loads(re.search(r"^description: (.+)$", header, re.M).group(1))
-                self.assertTrue(value.startswith("Use when"))
+                self.assertIn("Use when", value)
                 self.assertLessEqual(len(value), 1024)
                 self.assertLess(len(text.splitlines()), 100)
                 self.assertNotRegex(text, r"[一-鿿]")
