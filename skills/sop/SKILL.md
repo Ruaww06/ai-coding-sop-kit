@@ -23,6 +23,8 @@ Read [shared boundaries](references/common.md) first. This skill chooses the nex
 | Validation, cross-acceptance or delivery | `../sop-verification/SKILL.md` | Check expectations and actual evidence |
 | Failure, missing validation conditions, resumption or handoff | `../sop-recovery/SKILL.md` | Preserve evidence, stop blind retries and resolve outstanding work |
 
+If installing over an existing setup, switching versions/forms, or encountering conflicting legacy entries, read [the upgrade procedure](references/upgrade.md) before changing files or starting affected business work. This branch is not required for fresh projects or unrelated read-only investigation.
+
 If the goal or consequential authorization is unclear, investigate and clarify here without starting the affected implementation. Execute work with hard dependencies in dependency order.
 
 ## Project adoption

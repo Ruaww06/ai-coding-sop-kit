@@ -1,4 +1,4 @@
-"""Install/update text contracts and read-only fixtures, not model behavior tests."""
+"""Upgrade text contracts and read-only fixtures, not model behavior tests."""
 import json
 import os
 from pathlib import Path
@@ -7,10 +7,11 @@ import subprocess
 import tempfile
 import unittest
 
-from test_package import EXPECTED, snapshot
+from test_package import EXPECTED, local_links, snapshot
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "tests/migration-cases.json"
+PROCEDURE = ROOT / "skills/sop/references/upgrade.md"
 
 
 class MigrationTests(unittest.TestCase):
@@ -23,7 +24,30 @@ class MigrationTests(unittest.TestCase):
         for name in EXPECTED:
             self.assertIn(name, text)
         self.assertNotIn("skills/sop/references/migration.md", text)
-        self.assertNotIn("docs/sop/", text)
+        self.assertIn("](skills/sop/references/upgrade.md)", text)
+        self.assertIn("](docs/upgrading.md)", text)
+
+    def test_upgrade_is_reachable_before_install_writes(self):
+        install = (ROOT / "INSTALL.md").read_text()
+        self.assertLess(install.index("skills/sop/references/upgrade.md"),
+                        install.index("Copy only the complete skills"))
+        entry = (ROOT / "skills/sop/SKILL.md").read_text()
+        self.assertIn("](references/upgrade.md)", entry)
+        self.assertIn("not required for fresh projects", entry)
+        self.assertIn(PROCEDURE, {p.resolve() for p in local_links(ROOT / "skills/sop/SKILL.md")})
+
+    def test_upgrade_contract_requires_a_complete_authorized_switch(self):
+        text = PROCEDURE.read_text()
+        for term in ["before changing anything", "explicit rule references", "not directory names",
+                     "before overwriting shared files", "rule body", "Copying over existing",
+                     "outside all host discovery paths", "only working entry", "reversible switch plan",
+                     "loading is actually observed", "do not become current approval",
+                     "New edits", "retired skills are no longer discoverable",
+                     "customization/history remain intact", "pending, partial or verified",
+                     "do not automatically roll back", "no-op", "Unknown failure counts"]:
+            with self.subTest(term=term):
+                self.assertIn(term.lower(), text.lower())
+        self.assertNotRegex(text, r"[一-鿿]")
 
     def test_install_scenarios_have_safe_paths_and_unexecuted_status(self):
         cases = json.loads(CASES.read_text())
@@ -42,7 +66,9 @@ class MigrationTests(unittest.TestCase):
                     self.assertNotIn(".git", path.parts)
         topics = {case["id"] for case in cases}
         self.assertTrue({"install-only", "customized-update", "unknown-host",
-                         "mixed-active-skills", "interrupted-update", "same-content-rerun"} <= topics)
+                         "mixed-active-skills", "interrupted-update", "same-content-rerun",
+                         "loading-unverified", "embedded-rule-conflict",
+                         "v1-different-destination", "plugin-plus-project-skills"} <= topics)
 
     def test_hook_preserves_existing_and_partial_projects(self):
         parent = ROOT / "tmp"

@@ -32,7 +32,7 @@ class PackageTests(unittest.TestCase):
     def test_manifests_and_version(self):
         plugin = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
         self.assertEqual(plugin["name"], "ai-coding-sop-kit")
-        self.assertEqual(plugin["version"], "3.1.0-beta.1")
+        self.assertEqual(plugin["version"], "3.1.0-beta.2")
         self.assertEqual({p.name for p in (ROOT / ".claude-plugin").iterdir()}, {"plugin.json"})
         for name in ["README.md", "CHANGELOG.md", "INSTALL.md"]:
             self.assertIn(plugin["version"], (ROOT / name).read_text())
@@ -42,7 +42,8 @@ class PackageTests(unittest.TestCase):
         obsolete = sorted(actual - EXPECTED)
         missing = sorted(EXPECTED - actual)
         resources = set((ROOT / "skills/sop").rglob("*.md"))
-        allowed = {ROOT / "skills/sop/SKILL.md", ROOT / "skills/sop/references/common.md"}
+        allowed = {ROOT / "skills/sop/SKILL.md", ROOT / "skills/sop/references/common.md",
+                   ROOT / "skills/sop/references/upgrade.md"}
         stale_resources = sorted(str(p.relative_to(ROOT)) for p in resources - allowed)
         stale_docs = sorted(str(p.relative_to(ROOT)) for p in (ROOT / "docs/sop").rglob("*.md"))
         self.assertFalse(
