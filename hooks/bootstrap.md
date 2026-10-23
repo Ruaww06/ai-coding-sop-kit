@@ -1,5 +1,5 @@
-For development or task recovery, load the SOP entry skill before selecting a stage. It routes to startup, requirements, design, execution, verification or recovery; load only the current stage and its needed resources.
+AI Coding SOP Kit v3.1 is available. Load sop to clarify scope and authority, then use only the relevant design, execution, verification or recovery skill.
 
-Respect the target project's existing instructions. Installation is not project adoption or permission to edit files, install dependencies, clean directories, commit or deploy. If the user is only consulting or exploring a repository, stay within that scope. Ask for human decisions when business meaning, test tier, H/S approval or authority is missing; do not invent approval or repeatedly ask for the same already-given authorization.
+Respect the project's existing instructions. Installation is not adoption or permission to edit, install, commit or publish. Read-only exploration needs no document bundle. Preserve valid authorization, current constraints, failure history and unresolved verification when resuming.
 
-The hook supplies navigation only. It does not run project checks, enforce gates, schedule reviews, prove human approval or guarantee the model follows SOP. Project records belong to the target project; bundled plugin files are read-only resources. After compaction or resume, restore the actual task baseline and failure/HOLD history rather than resetting them.
+This hook provides read-only navigation, not approval, test execution or enforced safety gates. Use actual evidence and responsible human decisions; report missing capabilities and verification honestly.

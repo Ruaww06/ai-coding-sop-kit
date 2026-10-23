@@ -1,24 +1,32 @@
 ---
 name: sop-execution
-description: "Use when implementing, fixing or refactoring a dispatched task with confirmed requirements, frozen design, human-confirmed test tier and explicit implementation scope."
+description: "Use when implementing, fixing or refactoring an authorized task whose goal, acceptance, necessary decisions, scope and acceptance responsibility are clear."
 ---
 
-# 范围内执行
+# Smallest Complete Change
 
-读取 [共同约束](../sop/references/common.md)、[派发规则](../sop/references/stages.md)、[门禁与测试](../sop/references/gates.md) 和 [失败归因与停机条件](../sop/references/feedback.md)。不要因直接调用本技能而绕过需求、设计或人定档位。
+Read [shared boundaries](../sop/references/common.md). Same-session self-tests are allowed; they do not replace non-implementer cross-acceptance. Resolve missing necessary decisions or authorization without requiring a particular file or using this skill to bypass consequential ambiguity.
 
-## 操作
+## Before editing
 
-1. 恢复真实派发、计划编号/档位、实施授权、验收、允许文件和开始基线；读项目规约、目标代码、调用关系、契约、已有测试及同类实现。
-2. 复述目标、非范围、验收和假设。缺前置证据报缺项，转正确阶段；已确认同一授权不反复索批。
-3. 引用唯一调研记录，报告内部检索词和命中，避免重复实现被否决方案。
-4. 修 bug 先有失败复现测试，按档位做实现/独立验证短回路。预期来自需求、外部规格或不变量，不复制实现作为断言。
-5. 仅改白名单及已授权新增文件。新增依赖、公共接口、schema、验收、风险或范围变化停下请求相应裁决，不顺手重构、不改门禁让测试过。
-6. 使用项目真实检查入口，核对新增路径、白名单和依赖锁；缺能力报未完成，测试后代码再变重验。
-7. 失败先归因；达到停止条件或涉及高风险时转 recovery，不无限重试，也不靠换 Agent 清零。
+- Recover the goal, non-goals, acceptance, implementation authorization and responsibilities. Read project rules, target code, callers, contracts, tests and comparable implementations; reference relevant research and decisions.
+- Establish the baseline of relevant checks before modification. Preserve existing changes and distinguish pre-existing failures from new ones. If a baseline is unavailable, report it as unknown, not passing. Search and read selectively rather than loading unrelated files wholesale.
+- Identify the full necessary impact before minimizing edits. Split by a single verifiable result, not file counts or conversation turns; execute hard dependencies in order.
 
-## 出口
+## Alternate implementation and self-tests
 
-给实际文件改动、runner 证据、版本和未验证项。进入 verification 做交付核对，不自批独立验收。物理外部环境缺失只申请 H，本地测试失败不能伪装成 H。
+1. Tie each edit to the task or a necessary dependency. Do not tidy unrelated names, formatting, comments or architecture. Remove only unused items caused by this change; report unrelated existing issues separately.
+2. Preserve others' work. Do not overwrite, delete or restore historical state without authorization. If a necessary edit exceeds scope, explain the impact and obtain approval; neither exceed authority nor deliberately omit the edit.
+3. Follow the design's reuse choice and project layers and conventions. Do not swallow errors or remove validation or valid assertions to get green checks. Follow contracts for retries, fallback and errors. Simplification must retain trust-boundary validation, security, data protection, accessibility and necessary hardware calibration.
+4. For a bug, preserve a failing reproduction first. Leave an automated regression when feasible; otherwise record repeatable reproduction steps and verification limits. For refactoring, establish the behavior to preserve first. Add appropriate tests for nontrivial new logic.
+5. Reuse real project checks, execute them and read the results. Record the relevant version and environment. Distinguish unexecuted checks, failures and unavailable conditions; test doubles do not prove real-dependency behavior.
+6. For changed requirements or design, state what changes/stays, affected callers/acceptance and invalidated evidence against the current baseline. Confirm consequential changes first. Revalidate affected checks and necessary regressions; broaden validation if impact cannot be bounded reliably.
+7. Put temporary artifacts in the project's designated isolated location. Inspect targets before cleanup; client caches and others' files are not your own artifacts.
 
-例：真机缺失时可保留获授权的 feature 分支代码和未验证标记，先申请挂起；不能报告功能验收完成。
+## Stop and hand over
+
+After two consecutive failed fixes of the same problem, stop automatic retries, preserve evidence and refer it for human review. Resume only with new evidence or an approved new approach. Switching agents or sessions does not reset the count. Immediately stop affected dangerous operations for security, data-loss or authority risks. Do not hide failure by deleting tests, changing expectations or lowering standards. Use [recovery](../sop-recovery/SKILL.md) for diagnosis, missing conditions or handoff.
+
+When the authorized implementation is complete, relevant checks have run, and changes and unverified items are traceable, use [verification](../sop-verification/SKILL.md). Missing necessary validation means partial completion; do not approve final acceptance yourself.
+
+Example: retain an existing failing baseline rather than patching business code to hide an environment problem. A public-contract change needs the relevant approval and affected callers, not a deliberately incomplete "surgical" edit.

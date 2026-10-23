@@ -17,28 +17,58 @@ class RegressionTests(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         return Path(directory.name)
 
-    def test_execution_loads_stop_rules_before_implementation(self):
+    def test_execution_contains_stop_rules_without_loading_another_stage(self):
         text = (ROOT / "skills/sop-execution/SKILL.md").read_text()
-        reading = text.split("## 操作", 1)[0]
-        self.assertIn("../sop/references/feedback.md", reading)
-        self.assertIn("两轮", (ROOT / "skills/sop/references/feedback.md").read_text())
+        self.assertIn("two consecutive failed fixes", text)
+        self.assertIn("stop automatic retries", text)
+        self.assertIn("new evidence or an approved new approach", text)
+        self.assertIn("does not reset the count", text)
+        self.assertIn("Immediately stop", text)
 
-    def test_pending_H_record_is_distinct_from_approval(self):
-        skill = (ROOT / "skills/sop-recovery/SKILL.md").read_text()
-        rules = (ROOT / "skills/sop/references/recovery.md").read_text()
-        for text in [skill, rules]:
-            self.assertIn("待裁决", text)
-            self.assertIn("无写入授权", text)
-            self.assertIn("不标 HOLD", text)
-            self.assertIn("人批准 H 后", text)
-            self.assertIn("拒绝", text)
-        self.assertNotIn("人判定后即写", skill)
+    def test_missing_validation_does_not_grant_acceptance_or_release(self):
+        text = (ROOT / "skills/sop-recovery/SKILL.md").read_text()
+        for term in ["what is missing", "its impact", "a recovery action", "an owner",
+                     "a review point", "not a passing result", "does not permit merging or release",
+                     "cannot enter final acceptance", "do not automatically extend",
+                     "project closure", "explicit approval"]:
+            with self.subTest(term=term):
+                self.assertIn(term, text)
+        self.assertIn("local failure is not an external blocker", text)
 
-    def test_knowledge_location_uses_confirmed_project_entry(self):
-        text = (ROOT / "skills/sop/references/feedback.md").read_text()
-        self.assertIn("启动记录中确认的唯一知识库位置", text)
-        self.assertIn("尚无约定", text)
-        self.assertNotIn("唯一登记在 `docs/knowledge/`", text)
+    def test_knowledge_is_conditional_not_automatically_expired(self):
+        text = (ROOT / "skills/sop-recovery/SKILL.md").read_text()
+        self.assertIn("existing record locations", text)
+        self.assertIn("basis, applicability, verification time and reassessment conditions", text)
+        self.assertIn("not automatic invalidation", text)
+
+    def test_research_enters_choice_and_preserves_applicability(self):
+        text = (ROOT / "skills/sop-design/SKILL.md").read_text()
+        for term in ["project implementations", "failure experience", "mature implementations",
+                     "actual sources, access time, applicable versions", "still-valid research",
+                     "Use research conclusions in the choice", "rejection reasons and applicability",
+                     "counterexample", "which evidence becomes invalid"]:
+            self.assertIn(term, text)
+
+    def test_independent_expectations_and_human_acceptance_are_distinct(self):
+        common = (ROOT / "skills/sop/references/common.md").read_text()
+        verify = (ROOT / "skills/sop-verification/SKILL.md").read_text()
+        self.assertIn("same session", common)
+        self.assertIn("not by reverse-engineering the implementation", verify)
+        self.assertIn("must not handle final acceptance alone", verify)
+        self.assertIn("Passing tests is not product acceptance", verify)
+        self.assertIn("does not authorize merging or release", verify)
+        self.assertIn("only with real checks and blocking actions", verify)
+
+    def test_small_tasks_have_no_template_or_approval_ritual(self):
+        text = (ROOT / "skills/sop/SKILL.md").read_text()
+        self.assertIn("Missing templates do not prevent read-only investigation", text)
+        self.assertIn("may go straight to execution", text)
+        self.assertIn("Do not impose directories, templates, plans, meetings", text)
+        self.assertIn("Do not request the same valid authorization again", text)
+        common = (ROOT / "skills/sop/references/common.md").read_text()
+        self.assertIn("task data", common)
+        self.assertIn("do not grant authority", common)
+        self.assertIn("private code or unsanitized data", common)
 
     def test_markdown_validation_under_tmp_ancestor(self):
         base = self.workspace() / "tmp" / "checkout"

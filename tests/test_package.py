@@ -1,4 +1,4 @@
-"""Deterministic packaging tests; never start an LLM or install a plugin."""
+"""Deterministic packaging checks; never start a model or install a plugin."""
 import hashlib
 import json
 import os
@@ -11,10 +11,7 @@ import unittest
 from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED = {
-    "sop", "sop-startup", "sop-requirements", "sop-design",
-    "sop-execution", "sop-verification", "sop-recovery",
-}
+EXPECTED = {"sop", "sop-design", "sop-execution", "sop-verification", "sop-recovery"}
 
 
 def local_links(path):
@@ -35,28 +32,39 @@ class PackageTests(unittest.TestCase):
     def test_manifests_and_version(self):
         plugin = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
         self.assertEqual(plugin["name"], "ai-coding-sop-kit")
-        self.assertRegex(plugin["version"], r"^\d+\.\d+\.\d+(?:-[a-z0-9.]+)?$")
+        self.assertEqual(plugin["version"], "3.1.0-beta.1")
         self.assertEqual({p.name for p in (ROOT / ".claude-plugin").iterdir()}, {"plugin.json"})
-        for name in ["README.md", "CHANGELOG.md", "docs/sop/migration-v2.md"]:
+        for name in ["README.md", "CHANGELOG.md", "INSTALL.md"]:
             self.assertIn(plugin["version"], (ROOT / name).read_text())
 
-    def test_skill_metadata(self):
-        paths = list((ROOT / "skills").glob("*/SKILL.md"))
-        self.assertEqual({p.parent.name for p in paths}, EXPECTED)
-        for path in paths:
-            with self.subTest(skill=path.parent.name):
+    def test_distribution_has_no_legacy_rule_paths(self):
+        actual = {p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md")}
+        obsolete = sorted(actual - EXPECTED)
+        missing = sorted(EXPECTED - actual)
+        resources = set((ROOT / "skills/sop").rglob("*.md"))
+        allowed = {ROOT / "skills/sop/SKILL.md", ROOT / "skills/sop/references/common.md"}
+        stale_resources = sorted(str(p.relative_to(ROOT)) for p in resources - allowed)
+        stale_docs = sorted(str(p.relative_to(ROOT)) for p in (ROOT / "docs/sop").rglob("*.md"))
+        self.assertFalse(
+            obsolete or missing or stale_resources or stale_docs,
+            f"Obsolete skills: {obsolete}; missing: {missing}; "
+            f"obsolete resources: {stale_resources}; obsolete docs: {stale_docs}",
+        )
+
+    def test_skill_metadata_and_english_execution_core(self):
+        for name in sorted(EXPECTED):
+            path = ROOT / f"skills/{name}/SKILL.md"
+            with self.subTest(skill=name):
                 text = path.read_text()
                 self.assertTrue(text.startswith("---\n"))
                 header = text.split("---", 2)[1]
-                name = re.search(r"^name: (.+)$", header, re.M).group(1)
-                description = re.search(r"^description: (.+)$", header, re.M).group(1)
-                self.assertEqual(name, path.parent.name)
-                self.assertRegex(name, r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-                self.assertLessEqual(len(name), 64)
-                value = json.loads(description)
+                self.assertEqual(re.search(r"^name: (.+)$", header, re.M).group(1), name)
+                value = json.loads(re.search(r"^description: (.+)$", header, re.M).group(1))
                 self.assertTrue(value.startswith("Use when"))
                 self.assertLessEqual(len(value), 1024)
                 self.assertLess(len(text.splitlines()), 100)
+                self.assertNotRegex(text, r"[一-鿿]")
+        self.assertNotRegex((ROOT / "skills/sop/references/common.md").read_text(), r"[一-鿿]")
 
     def test_markdown_links_and_fences(self):
         for path in ROOT.rglob("*.md"):
@@ -68,35 +76,19 @@ class PackageTests(unittest.TestCase):
                     self.assertTrue(target.exists(), f"{path}: missing {target}")
 
     def test_skills_are_portable_as_a_group(self):
-        # A skills-only install must not require the repository docs or working directory.
         base = (ROOT / "skills").resolve()
         for path in base.rglob("*.md"):
             for target in local_links(path):
                 self.assertTrue(target.resolve().is_relative_to(base), str(target))
-        self.assertEqual(len(list(base.glob("sop/assets/*.md"))), 13)
-        self.assertEqual(len(list(base.glob("sop/references/*.md"))), 9)
-
-    def test_docs_are_indexes_not_duplicate_rules(self):
-        for name in ["workflow", "templates"]:
-            text = (ROOT / f"docs/sop/{name}.md").read_text()
-            self.assertIn("索引", text)
-            self.assertNotIn("```markdown", text)
-        self.assertFalse((ROOT / ".agents/skills/sop/SKILL.md").exists())
-        guide = (ROOT / "INSTALL.md").read_text()
-        for skill in EXPECTED:
-            self.assertRegex(guide, rf"(?m)^[ \t]*{re.escape(skill)}[ \t]*$")
-        self.assertIn(".dsh/skills/", guide)
-        self.assertIn(".claude/skills/", guide)
-        self.assertIn("加载待验证", guide)
-        self.assertIn("显式读取已核验，原生发现不适用", guide)
-        self.assertIn("不猜技能目录", guide)
-        self.assertIn("不能联网", guide)
-        self.assertIn("不自动注册 marketplace", guide)
-        self.assertNotIn("这份指南只针对 DeepSeek Harness", guide)
-        entry = "https://raw.githubusercontent.com/Ruaww06/ai-coding-sop-kit/refs/heads/docs/sop-v2/INSTALL.md"
-        instruction = f"请获取并遵循 {entry}，识别当前 Agent 的接入方式，将 AI Coding SOP Kit 安装到当前项目；遇到冲突先询问，已有旧版先预览迁移差异，不擅自改写项目规约。"
-        for name in ["README.md", "docs/installation.md", "docs/sop/adapters/deepseek-harness.md"]:
-            self.assertIn(instruction, (ROOT / name).read_text())
+        parent = ROOT / "tmp"
+        parent.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="skills 空格-", dir=parent) as temp:
+            relocated = Path(temp) / "技能"
+            shutil.copytree(base, relocated)
+            for name in EXPECTED:
+                path = relocated / name / "SKILL.md"
+                for target in local_links(path):
+                    self.assertTrue(target.exists(), str(target))
 
     def test_hook_configuration(self):
         config = json.loads((ROOT / "hooks/hooks.json").read_text())
@@ -107,7 +99,6 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(item["hooks"][0]["type"], "command")
 
     def test_bootstrap_is_read_only_relocatable_and_repeatable(self):
-        # Keep temporary files inside the gitignored repository test area.
         parent = ROOT / "tmp"
         parent.mkdir(exist_ok=True)
         with tempfile.TemporaryDirectory(prefix="plugin 空格-", dir=parent) as temp:
@@ -119,8 +110,7 @@ class PackageTests(unittest.TestCase):
             shutil.copytree(ROOT / "hooks", plugin / "hooks")
             shutil.copytree(ROOT / "skills", plugin / "skills")
             before = snapshot(base)
-            env = os.environ.copy()
-            env["CLAUDE_PLUGIN_ROOT"] = str(plugin)
+            env = dict(os.environ, CLAUDE_PLUGIN_ROOT=str(plugin))
             command = ["sh", str(plugin / "hooks/session-start.sh")]
             first = subprocess.run(command, cwd=project, env=env, text=True, capture_output=True)
             second = subprocess.run(command, cwd=project, env=env, text=True, capture_output=True)
@@ -128,32 +118,54 @@ class PackageTests(unittest.TestCase):
             self.assertEqual(second.returncode, 0, second.stderr)
             self.assertEqual(first.stdout, second.stdout)
             self.assertIn(str(plugin / "skills/sop/SKILL.md"), first.stdout)
-            self.assertIn("Installation is not project adoption", first.stdout)
+            self.assertIn("Installation is not adoption", first.stdout)
             self.assertEqual(first.stderr, "")
             self.assertEqual(snapshot(base), before)
 
-    def test_bootstrap_reports_missing_root_and_resources(self):
-        env = os.environ.copy()
-        env.pop("CLAUDE_PLUGIN_ROOT", None)
-        script = ROOT / "hooks/session-start.sh"
-        result = subprocess.run(["sh", str(script)], env=env, text=True, capture_output=True)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertEqual(result.stdout, "")
-        env["CLAUDE_PLUGIN_ROOT"] = str(ROOT / "tests/no-such-plugin")
-        result = subprocess.run(["sh", str(script)], env=env, text=True, capture_output=True)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertEqual(result.stdout, "")
-        self.assertIn("missing", result.stderr)
+    def test_bootstrap_reports_missing_root_and_each_resource(self):
+        parent = ROOT / "tmp"
+        parent.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="missing-", dir=parent) as temp:
+            base = Path(temp)
+            script = ROOT / "hooks/session-start.sh"
+            env = os.environ.copy()
+            env.pop("CLAUDE_PLUGIN_ROOT", None)
+            result = subprocess.run(["sh", str(script)], env=env, text=True, capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(result.stdout, "")
+            # Create partial fixtures instead of deleting any source resources.
+            for resource in ["none", "entry-only", "bootstrap-only"]:
+                plugin = base / resource
+                plugin.mkdir()
+                if resource == "entry-only":
+                    entry = plugin / "skills/sop/SKILL.md"
+                    entry.parent.mkdir(parents=True)
+                    entry.write_text("# Entry\n")
+                if resource == "bootstrap-only":
+                    guidance = plugin / "hooks/bootstrap.md"
+                    guidance.parent.mkdir()
+                    guidance.write_text("Read-only navigation.\n")
+                env["CLAUDE_PLUGIN_ROOT"] = str(plugin)
+                result = subprocess.run(["sh", str(script)], env=env, text=True, capture_output=True)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(result.stdout, "")
+                self.assertIn("missing", result.stderr)
 
-    def test_behavior_cases_are_unique_and_have_observable_checks(self):
+    def test_behavior_cases_are_unexecuted_observable_specifications(self):
         cases = json.loads((ROOT / "tests/behavior-cases.json").read_text())
-        self.assertGreaterEqual(len(cases), 6)
+        self.assertTrue(cases)
         self.assertEqual(len({case["id"] for case in cases}), len(cases))
         for case in cases:
             self.assertTrue(case["prompt"])
             self.assertIn(case["expected_skill"], EXPECTED)
-            self.assertGreaterEqual(len(case["assertions"]), 2)
+            self.assertTrue(case["assertions"])
             self.assertEqual(case["status"], "not-run")
+        expected_topics = {
+            "explore-only", "clear-small-task", "research-before-choice", "same-session-self-test",
+            "independent-expectations", "incremental-invalidation", "resume-keeps-counts",
+            "blocked-validation", "no-automatic-extension", "untrusted-authorization",
+        }
+        self.assertTrue(expected_topics <= {case["id"] for case in cases})
 
 
 if __name__ == "__main__":

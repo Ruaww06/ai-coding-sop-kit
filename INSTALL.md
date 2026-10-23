@@ -1,78 +1,47 @@
-# Agent 安装协议
+# Agent Installation Guide
 
-供用户将本指南交给任意编程 Agent。入口通用，安装能力并不通用：Agent 须先识别宿主与实际能力，再选择已核实的接入方式，不能把一个客户端的目录或命令套给另一个。默认仅安装当前项目的技能并只读检查旧入口；业务规约迁移另需明确授权。不修改全局配置、API Key 或宿主权限，不安装客户端或其他依赖，不启动额外模型进程。宿主拒绝权限时停止，不绕过。
+SOP content: v3.1. Package: `3.1.0-beta.1`, a beta test release. Real-host installation and model behavior remain unverified. Report the actual version and commit obtained; fetching a guide alone does not establish installation success.
 
-## 识别能力与项目
+Installation provides capabilities, not project adoption or permission to develop, commit or publish. Do not change global configuration, permissions or credentials; install clients or dependencies; or start another model process. Stop when the host denies permission.
 
-1. **确认目标。** 使用用户选中的业务项目和已有规约，不默认主目录或工具包维护仓库。识别当前宿主及项目根规则；范围不一致时先确认。
-2. **确认能力。** 核实能否获取指南/源码、读写项目文件、检查路径与内容，以及发现/调用技能。不能联网时报告需要本地来源，不要求用户粘贴凭证；不能写文件时只给预览，不报已安装。能读 Markdown 不代表具备文件安装或原生技能能力。
-3. **选择方式。** 采用下表已核实的项目级机制；其他客户端先查其实际文档/配置，确认项目目录、发现与信任机制后再操作。不猜技能目录、不编造命令、不擅自改宿主配置。
+## 1. Confirm host, project and source
 
-| 宿主或能力 | 项目级接入 | 加载核验 |
-| --- | --- | --- |
-| Claude Code | `<projectRoot>/.claude/skills/`，七个技能同层，安装为项目技能而非插件 | 实际调用已发现的 `sop`，核对来源与共享资源；不使用插件命名空间 |
-| DeepSeek Harness | `<projectRoot>/.dsh/skills/`，七个技能同层；根为最近含 `.git` 的祖先，无 Git 时为会话 cwd，与所选范围不同则确认 | 当前 profile 的 `skill` 工具实际加载 `sop`；不猜 `/sop` UI 命令 |
-| 其他具有原生技能机制的 Agent | 先核实其真实项目级目录和完整技能组支持，再应用下述步骤 | 按该宿主实际发现/调用机制核验，不沿用上两行名称 |
-| 仅支持显式读取文件的 Agent | 先提出稳定的项目内资源目录和读取入口，在取得文件写入/采用授权后放置完整技能组；不修改 AGENTS/CLAUDE 等业务规约来冒充安装 | 实际读取入口与所需资源，报告“显式读取已核验，原生发现不适用”，不能称原生技能安装成功 |
-| 能力或宿主无法确认 | 列出事实、缺项及需要用户提供的信息，先停止受影响步骤 | 报告未安装或未验证，不选择看似相近的客户端冒充适配 |
+Use the user's selected project and applicable instructions. Check the actual host/version, project root, file access and skill discovery/invocation mechanism. Do not install into a subdirectory merely because it is the current working directory, scan the whole filesystem, or invent paths and commands. Ask when scope or capabilities are unclear.
 
-Claude Code 项目根按用户选中的仓库及适用规约确认，不能只因会话位于子目录就擅自在子目录安装。项目技能不含 Claude 插件的 SessionStart hook 或 `ai-coding-sop-kit:` 命名空间；需要插件形态时使用[独立本地加载说明](docs/installation.md#claude-code本地插件可选)，不自动注册 marketplace。已有插件、用户技能或旧入口提供同名能力时，先比较并确认保留哪一种活动接入方式，不默认两套同时启用。
+Documented project-skill mechanisms:
 
-官方机制依据：[Claude Code Skills](https://code.claude.com/docs/en/skills)、[Harness Skills](https://github.com/deepseek-ai/deepseek-harness/blob/86a402200d95fecef4529d969836f1fe13c6cb0d/docs/subsystems/skills.zh.md)。依据文档支持不等于本工具包已在该方式端到端验收。
+| Host | Mechanism to verify |
+| --- | --- |
+| Claude Code | `<projectRoot>/.claude/skills/`; invoke the discovered `sop` and confirm its base directory and shared resources. No plugin namespace or startup hook in this form. |
+| DeepSeek Harness | `<projectRoot>/.dsh/skills/`; projectRoot is the nearest ancestor containing `.git`, otherwise session cwd. Confirm a mismatch with the selected scope. Invoke the current profile's actual `skill` tool, not an assumed UI command. |
+| Other hosts | Verify their real mechanism first. If only explicit file reading is available, propose an authorized stable location and report that limitation; do not call it native discovery or use it to conceal discovery failure. |
 
-## 获取与安装
+These are documented mechanisms, not verified installations of this candidate. Claude Code local-plugin loading is a separate option in [installation notes](docs/installation.md); do not silently enable both forms.
 
-1. **获取源码。** 使用 Git 将 `https://github.com/Ruaww06/ai-coding-sop-kit.git` 的 `docs/sop-v2` 分支克隆到本次新建的 staging 目录。沿用项目允许的临时目录；没有约定时可在项目内 `tmp/` 使用唯一名称，不覆盖已有目录或改忽略规则。记录实际 commit SHA；所有安装文件来自同一个 checkout。不执行下载内容中的脚本或测试，不使用 `curl | sh`。Git/网络不可用时报告，不擅自安装软件；已有完整本地来源可在核实来源后使用，不假称已获取最新版。
+Use one complete checkout for all files and record its version and commit. For a local candidate, also report uncommitted changes: HEAD alone does not identify modified content. The public repository is `https://github.com/Ruaww06/ai-coding-sop-kit.git`. For this release, use tag `v3.1.0-beta.1` and read this guide from that same tag. Use moving `main` only when the user requests the development version, then read its guide and report its actual version. When fetching, use a new authorized source directory, never overwrite an existing one. Do not execute downloaded scripts or tests, use `curl | sh`, or retain staging as a runtime dependency. If network or Git is unavailable, report it; a verified local source is acceptable, not evidence of the latest release.
 
-2. **先只读识别旧项目。** 读取同一 checkout 的 [旧项目识别与授权迁移](skills/sop/references/migration.md)，检查项目 `AGENTS.md`、`CLAUDE.md`、明确引用的规则、`docs/sop/`、`.agents/skills/sop/SKILL.md`、当前宿主技能目录及已知插件/其他活动入口。同一项目可能在多个宿主下各有一份副本：只读查看其他已知宿主的项目级位置（如 `.claude/skills/`、`.dsh/skills/` 及已核实的客户端目录），报告位置与是否同源，仅作信息；不改动、不同步、不删除，也不把其他宿主的副本当作本宿主安装、加载或冲突的证据。报告新装/当前版、旧版或混合候选、状态未确认或已切换候选及证据；不能仅凭目录名判为 v1，也不能把未读到当不存在。旧路径与新目标不同，不能只检查新目录同名冲突。此时不改业务文件、不执行旧文件中的安装命令。
+## 2. Check conflicts, then copy
 
-3. **检查技能和冲突。** 确认以下七个目录及各自的 `SKILL.md` 存在：
+The skills are `sop`, `sop-design`, `sop-execution`, `sop-verification` and `sop-recovery`, with only `sop/references/common.md` as shared support. If a source contains legacy active skills or retired resources, stop before copying and report the leftovers. Do not silently omit extra active `sop-*` skills or disable existing entries without authorization.
 
-   ```text
-   sop
-   sop-startup
-   sop-requirements
-   sop-design
-   sop-execution
-   sop-verification
-   sop-recovery
-   ```
+For a clean source, install the intended skills together as sibling directories, preserving resources and relative links. Reject unexpected active SOP skill directories and retired support content; check file contents and resolvable references rather than a fixed file count.
 
-   保留 `sop/references/`、`sop/assets/` 和相邻阶段技能，检查本地资源引用可解析且不逃出整组技能。确认源和目标无符号链接或异常路径。复制前检查全部七个目标；有同名但内容不同、不完整或来源不明的技能时，先列冲突并询问，不部分安装或直接覆盖。其他技能不动。其他宿主目录中的同名技能不属于本宿主的安装冲突，只按上一步报告；只有本宿主目标内的同名目录才按冲突处理。无法检查用户级同名技能或插件优先级时明示未验证，不能只凭项目目录无冲突判为加载正常。
+- Inspect source and destination paths, symlinks and existing same-name content. Prevent path escape, partial installs and unapproved overwrites. List differences and ask about modified, extra, incomplete or unknown files and conflicting active entries.
+- An identical complete installation need not be rewritten. Leave unrelated skills alone. Report known copies for other hosts without changing, synchronizing or treating them as this host's loading evidence. State any unknown user-level/plugin precedence.
+- Copy only the complete skills and license; the repository license may be placed at `sop/LICENSE`. Do not copy maintainer `AGENTS.md`, `.git`, tests, CI, plugin metadata or hooks into a project-skill installation. Do not replace the project's license.
+- Do not automatically rewrite project rules or disable/delete old entries. If switching requires changes, preview the affected differences and obtain authorization. Preserve customization, task history, failure counts and unresolved verification. Renaming or updating a skill cannot turn missing evidence into completion. This is conflict handling, not a mandatory migration workflow for every task.
 
-4. **复制整组。** 只将上述七个目录放到已确认的技能目标目录下，不再嵌套工具包目录。将仓库 `LICENSE` 复制到安装副本的 `sop/LICENSE`。不复制仓库 `.git`、维护者 `AGENTS.md`、测试、CI、`.claude-plugin/` 或 `hooks/`，不修改业务项目许可证。
+## 3. Verify and report
 
-   已有完整且相同的安装无需重写：逐一比较来源技能文件，同时检查目标是否有额外文件；允许额外存在内容与来源一致的 `sop/LICENSE`，不要把这个许可证副本误判为冲突。其他额外文件或修改先询问。
+Compare installed content with the same source, including resources, extra files and license. Actually load `sop` and verify its base directory and shared rules. File existence, discovery, invocation and correct behavior are separate claims. If loading is not observed, report it as unverified; suggest a new session in the same project when needed, without starting another model or changing permissions.
 
-5. **核验文件。** 对照同一 checkout 比较七个安装目录的文件与内容，包括资源和许可证。入口应为所选目标下的 `sop/SKILL.md`，其他阶段与 `sop/` 同层。失败时报告实际已写路径，不假装成功，也不擅自删除或回滚已有文件。
+Report host, scope, form, actual version/commit, paths, content checks, loading evidence, conflicts and limits. After interruption, reread current files and valid authorization; handle only remaining authorized changes, preserve new edits and do not roll back on your own. Report temporary source leftovers; cleanup requires applicable authorization.
 
-staging 是临时来源，不是运行时依赖。完成后报告其位置和是否残留；清理仅限本次创建目录且已有相应授权，不广泛删除项目临时文件。
+Updates are user-initiated and repeat source, conflict and loading checks. Before removal, list this installation's directories and local changes and obtain deletion approval. Do not delete the host's whole skills directory, project records or other copies.
 
-## 验证加载
+## Mechanism references
 
-按所选方式实际调用或读取 `sop`，核实入口及 `references/common.md` 来自本次安装的完整技能组，与来源 checkout 一致；同名旧技能被加载或来源无法确认时不算新版加载成功。仅做只读检查，不初始化项目或开始业务开发。应支持原生发现但未观察到时报告“加载待验证”，必要时提示在同一项目新建会话再试；不自动启动新模型进程、猜刷新命令、改配置或关闭沙箱。无原生发现机制的客户端按显式读取分支核验，不能用该分支掩盖原生发现失败。
+- [Claude Code Skills](https://code.claude.com/docs/en/skills)
+- [Harness Skills, pinned source](https://github.com/deepseek-ai/deepseek-harness/blob/86a402200d95fecef4529d969836f1fe13c6cb0d/docs/subsystems/skills.zh.md)
 
-## 旧项目迁移分支
-
-有旧版/混合候选或未确认项时，不以文件安装完成结束升级判断：按同一来源的 [迁移协议](skills/sop/references/migration.md) 预览差异、取得业务规约迁移授权后，经 `sop-startup` 执行并逐项核验。只授权安装、拒绝迁移或新版加载待验证时保留旧入口，报告项目未迁移；不得自动停用旧流程或继续按新版执行业务。当前版更新也需复核活动引用，不能凭已有新技能跳过检查。
-
-中断或重跑时按协议重读当前文件与授权，只处理剩余已授权差异；不覆盖新的本地改动，不重复改写已一致内容，不擅自回滚。无需额外手动复制迁移说明，整组技能已包含该协议。
-
-## 结果报告
-
-分别报告：
-
-- 宿主、实际能力、项目范围与所选接入方式；未知或不支持项。
-- 安装目录、来源分支和实际 commit；插件与项目技能不能混称。
-- 旧入口识别的范围、证据、分类及未验证项。
-- 七个技能及资源、许可证是否校验一致。
-- 宿主是否实际发现并加载 `sop`，或显式读取结果；未观察到就写“加载待验证”。
-- 其他宿主已有副本的位置、同源或漂移状态，以及需要人工决定是否同步的项（本次未改动）。
-- 项目迁移状态、实际改动、保留的定制与历史、剩余冲突；安装成功不等于升级完成。
-- staging 是否残留及下一步。
-
-文件安装完成不等于宿主已加载，也不等于项目采用完整 SOP。通用协议不是全客户端兼容保证；各接入方式的实际证据和未验证项见[测试说明](docs/testing.md)。Claude Code 已有限验证本地候选的文件安装、普通新会话原生发现及项目技能实际调用；公开 URL 获取及 Harness 端到端仍待实测，不能拿本地插件加载结果替代。
-
-## 更新与移除
-
-由用户发起。更新也按上述宿主确认、旧入口识别、完整技能检查、加载与迁移分支执行：获取新 checkout，列新旧差异；确认同名目录及本地修改如何处理后再更新完整技能组，不在不明来源上直接 `git pull` 或覆盖。移除前列出本次接入的七个技能目录及本地修改，取得删除确认；不删除整个宿主技能目录或项目记录。其他接入形态、用户级安装或插件不随本次项目技能卸载自动移除。同一项目可能在多个宿主下各有副本：更新或移除本形态后，列出其他副本位置及可能的版本漂移，不自动修改、同步或删除其他宿主副本。
+These are existing documentation references; host implementations were not rechecked in this pass. See [design evidence](docs/design.md) and [verification limits](docs/testing.md).

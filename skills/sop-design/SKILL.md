@@ -1,23 +1,44 @@
 ---
 name: sop-design
-description: "Use when confirmed requirements need architecture, interface or data decisions, a design freeze, or a development plan and human-rated task dispatch before implementation."
+description: "Use when an authorized task needs an approach, unfamiliar capability, important technology choice, public contract or data decision, or reassessment of an existing design."
 ---
 
-# 设计冻结与派发准备
+# Research Before Choosing
 
-读取 [共同约束](../sop/references/common.md)、[阶段门槛](../sop/references/stages.md) 和 [门禁与档位](../sop/references/gates.md)。资源相对本技能，项目产物沿用项目位置。
+Read [shared boundaries](../sop/references/common.md). Scale design work to its impact, not a mandatory architecture/model/ADR package. Investigate and clarify an unclear goal or consequential ambiguity; do not treat assumptions as approval.
 
-## 操作
+## Find existing solutions
 
-1. 先核对 DoR 和唯一调研记录，缺实际调研/人核验则回 requirements，不静默冻结假设。
-2. 对影响其他模块的契约、所有权、生命周期、不变量、一致性、权限、量级、选型退出路径、观测和回滚前置决策。每条设计约束给失败场景，局部细节可延后。
-3. 用 [冻结记录](../sop/assets/design.md) 引用接口契约、数据模型和 ADR。已有有效产物复用；无接口/模型时明确不存在及人评审依据，不创建空文档冒充完成。非功能目标仍要定义，H 只挂实际测量。
-4. 设计冻结须真实确认。关键取舍没定不进入实现，不把 AI review 当作人批准。
-5. 冻结后用 [开发计划](../sop/assets/plan.md) 拆单一可验任务，列硬依赖、不同的负责人/验收人、验收锚点；任务粒度和档位按规则。
-6. AI 可建议档位，派发前由人判定、项目负责人确认。档位/状态只记计划， [派发单](../sop/assets/task.md) 回指编号，列范围、真实验证入口、基线、参考实现、检索词与命中。
+1. Inspect existing project implementations, relevant decisions and failure experience. For a new capability, important choice, unfamiliar domain or an approach worth reconsidering, also consult mature implementations, official documentation and existing evaluations. Research can challenge the current approach, not merely fill gaps.
+2. Answer: **What solutions already exist? Under what conditions do they apply? How does this project differ?** Do not manufacture candidates to meet a quota, substitute popularity for evidence or adopt another project's conclusions as this project's results.
+3. Record actual sources, access time, applicable versions, key conclusions and unknowns. Reuse still-valid research without pretending to have rechecked it. Verify consequential facts; never assume an unverified fact that affects safety or the design's viability. Humans decide business and risk tradeoffs.
+4. Use research conclusions in the choice. Preserve rejection reasons and applicability conditions, avoiding both repeated exploration and permanent rejection detached from its premises. Use existing task or design records, not a new ledger.
 
-## 出口
+## Choose the simplest complete solution
 
-报告冻结三产物、真实决策来源、计划及派发缺项。只有任务、档位与实施授权齐备才转 execution；批准设计不自动批准业务代码、安装依赖或修改公共契约。
+Choose the first option in this order that completely solves the problem:
 
-例：已有 API 和模型且本次无需修改时引用原文和版本，不重造一套；依赖挂掉时的行为仍需定义，不能留到编码时猜。
+1. **Is anything new necessary?** Do not add unrequested features, options or extensibility. Clarify the core use when the request is vague.
+2. **Does the project already have it?** Reuse functions, components, services or patterns as surrounding code does.
+3. **Can the standard library or platform do it?** Use it directly; prefer the project's established implementation when one exists.
+4. **Can an installed dependency do it?** Use existing dependencies; do not add one for a few lines.
+5. **Can it be a one-liner understood at a glance?** If so, do not expand it. A line that takes effort to decode is not simple.
+6. **Otherwise, write the minimum necessary code.** If a new dependency is genuinely needed, explain why and obtain the relevant approval.
+
+Identify everything that must change before minimizing the change: code, callers, data and tests. Do not build frameworks for one-off logic or add unrequested wrappers and configuration. Preserve established layers, interfaces and conventions; moving or merging code must retain validation and error handling. Explain a simpler alternative's tradeoffs; obtain human approval if it changes confirmed requirements.
+
+## Challenge consequential decisions
+
+Front-load only decisions that affect others or are hard to reverse: public interfaces and error semantics, data ownership and lifecycle, permissions, transactions and consistency, important dependencies, migration and recovery. Leave local reversible organization to implementation.
+
+For each consequential decision, state **the conditions it relies on, a counterexample that would invalidate it, and how to check**. Consider dependency failure, data invariants, concurrency and scale as relevant. "Scalable" and "reliable" are not concrete constraints.
+
+Record what the change needs: inputs/outputs/errors/compatibility/callers for public behavior; invariants/migration/failure/recovery for data; reasons/important alternatives/exit cost for substantial choices. Reference valid records; do not create empty documents when no corresponding change exists.
+
+For an incremental change, state against the current baseline: what changes, what stays, affected callers and acceptance, and which evidence becomes invalid. Confirm consequential changes before implementation without re-explaining unchanged constraints. Split work by a single verifiable result; respect hard dependencies.
+
+## Exit
+
+The impact is identified, necessary research has a basis, consequential choices and viability conditions are confirmed, and necessary contracts, validation and recovery approaches are available. With sufficient existing decisions, proceed to execution. Design approval alone does not authorize implementation.
+
+Example: inspect project code and failure experience for an existing-interface fix. For new storage, also research mature options, applicable versions, data constraints and migration recovery—not just popular products.
